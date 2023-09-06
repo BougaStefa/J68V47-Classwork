@@ -1,3 +1,4 @@
+//Take a name and a hobby, output a short story using them
 import java.util.*;
 public class L2E1 {
     public static void main(String[] args) {
