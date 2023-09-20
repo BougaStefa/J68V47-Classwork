@@ -1,3 +1,4 @@
+package Lesson2;
 /**
  * Take 2 numbers, perform and display calculations using them
  */

@@ -1,3 +1,5 @@
+package Lesson3;
+
 import java.util.*;
 public class L3E1
 {

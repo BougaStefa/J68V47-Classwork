@@ -1,3 +1,5 @@
+package Lesson2;
+
 import java.util.*;
 public class L2E3 {
     public static void main(String[] args) {

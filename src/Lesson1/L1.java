@@ -1,3 +1,5 @@
+package Lesson1;
+
 /**
  * My first program
  * @author Stefanos Bougatsas

@@ -1,3 +1,5 @@
+package Lesson4;
+
 import          java.util.*;
 import org.fusesource.jansi.AnsiConsole;
 import static org.fusesource.jansi.Ansi.*;
