@@ -5,9 +5,9 @@ public class L5E1 {
         Scanner input   =   new Scanner(System.in);
         System.out.println("Enter a number");
         int num         =   input.nextInt();
-        for(int count=0;    count<13;   count++)
+        for(int count=1;    count<13;   count++)
         {
-            System.out.println(num*count);
+            System.out.println(num  +   " x " +   count   +   " = " +   num*count);
         }
     }
 }
