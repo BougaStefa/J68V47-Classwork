@@ -1,3 +1,4 @@
+//accidentally did extra challenges A plus E3 in one as I'd set up my random gen in L6
 package Lesson7;
 import java.util.*;
 public class L7E3 {
