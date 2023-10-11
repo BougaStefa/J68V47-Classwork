@@ -6,7 +6,7 @@ public class L7E1 {
     }
     public static int getOption(){
         Scanner input = new Scanner(System.in);
-       int option = input.nextInt();
+        int option = input.nextInt();
         return option;
     }
     public static void optionResp(String message){
