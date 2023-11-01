@@ -5,6 +5,7 @@ import java.util.*;
 public class L8E3 {
 
     public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
         // Set up the directions array
         String[] directions = {"Start by exiting the building you are currently in and turning left onto the main road.",
                 "Walk down the road for two blocks until you reach the traffic lights.",
@@ -21,12 +22,38 @@ public class L8E3 {
             System.out.format("%d. %s %n", step, direction);
             step++;
         }
+        step = 1;
+        System.out.println("Enter the new direction instructions: ");
+        String instructionsEntered = input.nextLine();
+        System.out.println("Which step would this be? ");
+        int chosenStep = input.nextInt();
+        for (String direction : addValueToArray(directions, instructionsEntered, chosenStep)) {
+            System.out.format("%d. %s %n", step, direction);
+            step++;
+        }
+        input.nextLine();
+        step = 1;
+        for (String direction : removeLastItem(addValueToArray(directions, instructionsEntered, chosenStep))) {
+            System.out.format("%d. %s %n", step, direction);
+            step++;
+        }
     }
 
     public static String[] addValueToArray(String[] oldArray, String newString, int stepPosition) {
-        String[] newArray = Arrays.copyOf(oldArray, oldArray.length + 1);
-        newArray[stepPosition - 1] = newString;
+        String[] newArray = new String[oldArray.length + 1];
+        for (int i = 0; i <= (stepPosition - 1); i++) {
+            newArray[i] = oldArray[i];
+            if (i == (stepPosition - 1)) {
+                newArray[i] = newString;
+            }
+        }
+        for (int i = stepPosition; i <= oldArray.length; i++) {
+            newArray[i] = oldArray[i - 1];
+        }
         return newArray;
     }
 
+    public static String[] removeLastItem(String[] oldArray) {
+        return Arrays.copyOf(oldArray, oldArray.length - 1);
+    }
 }
