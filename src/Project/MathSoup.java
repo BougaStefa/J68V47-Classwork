@@ -173,7 +173,7 @@ public class MathSoup {
 		}
 
 		public int DisplayAccountExist(Scanner scanner) {
-				System.out.println("Do you already have an account?");
+				System.out.printf("Do you already have an account?%n1.Yes%n2.No%n3.Exit%n");
 				int choice = getValidNumber(scanner, 1, 3);
 				return switch (choice) {
 						case MENU_YES -> 1;
@@ -222,6 +222,7 @@ public class MathSoup {
 		}
 
 		public void createPassword(String username, Scanner scanner) {
+				System.out.println("Please create a password between 9 and 20 characters long");
 				String password = getValidPassword(scanner, 9, 20);
 				String fileName = username + ".txt";
 				try (PrintWriter out = new PrintWriter(new FileWriter(fileName, true))) {
@@ -252,6 +253,7 @@ public class MathSoup {
 				System.out.println("Welcome to MathSoup, do you have an account with us?");
 				switch (DisplayAccountExist(scanner)) {
 						case MENU_YES:
+								scanner.nextLine();
 								System.out.println("Please enter your username");
 								while (true) {
 										String username = getUsername(scanner);
@@ -262,18 +264,17 @@ public class MathSoup {
 												scanner.nextLine();
 										} else {
 												//LOGIN CODE GOES HERE
+												System.out.println("yeet");
 												break;
 										}
 								}
+								break;
 						case MENU_NO:
-								System.out.println("No problem, you can create one now!");
+								scanner.nextLine();
+								System.out.printf("No problem, you can create one now!%nNote:No special characters allowed.%n");
+								String username = getUsername(scanner);
+								createAccount(username, scanner);
 				}
-
-
-				String username = getUsername(scanner);
-				createAccount(username, scanner);
-
-
 		}
 
 		public static void main(String[] args) {
