@@ -78,16 +78,22 @@ public class MathSoup {
 				}
 		}
 
-		public boolean getSpecificLengthString(String input, int length) {
-				return input.length() == length;
+		public boolean getSpecificLengthString(String input, int minLength, int maxLength) {
+				return input.length() >= minLength && input.length() <= maxLength;
 		}
 
-		public String getPassword(Scanner scanner) {
-				String password = scanner.nextLine();
-				if (getSpecificLengthString(password, 9)) {
-						return password;
-				} else {
-						System.out.println("");
+		public String getValidPassword(Scanner scanner, int minLength, int maxLength) {
+				//Ensuring that a password of 9-20 characters is returned.
+				while (true) {
+						//Password cannot have spaces either , scanner.next takes care of that
+						String password = scanner.next();
+						if (password.length() >= minLength && password.length() <= maxLength) {
+								return password;
+						} else {
+								System.out.println("Please make sure your password has at least 9 characters and at most 20");
+								//Clearing input buffer
+								scanner.nextLine();
+						}
 				}
 		}
 		//INPUT VALIDATION END
@@ -203,9 +209,9 @@ public class MathSoup {
 						if (!checkAccountExist(username)) {
 								try (PrintWriter out = new PrintWriter(new FileWriter(username + ".txt"))) {
 										out.println("Username:" + username);
-										System.out.println("Account created successfully!");
+										System.out.println("Username created successfully!");
 								} catch (IOException e) {
-										System.out.println("Error occured writing to file: " + e.getMessage());
+										System.out.println("Error occurred writing to file: " + e.getMessage());
 								}
 								break;
 						} else {
@@ -213,6 +219,22 @@ public class MathSoup {
 								username = getUsername(scanner);
 						}
 				}
+		}
+
+		public void createPassword(String username, Scanner scanner) {
+				String password = getValidPassword(scanner, 9, 20);
+				String fileName = username + ".txt";
+				try (PrintWriter out = new PrintWriter(new FileWriter(fileName, true))) {
+						out.println("Password:" + password);
+						System.out.println("Password created successfully!");
+				} catch (IOException e) {
+						System.out.println("Error occurred writing password to file: " + e.getMessage());
+				}
+		}
+
+		public void createAccount(String username, Scanner scanner) {
+				createUsername(username, scanner);
+				createPassword(username, scanner);
 		}
 
 		public boolean checkAccountExist(String username) {
@@ -227,9 +249,30 @@ public class MathSoup {
 
 		//MAIN
 		public void runMathSoup(Scanner scanner) {
-				System.out.println("Please create a username" + "\n" + "NOTE:No special characters allowed");
+				System.out.println("Welcome to MathSoup, do you have an account with us?");
+				switch (DisplayAccountExist(scanner)) {
+						case MENU_YES:
+								System.out.println("Please enter your username");
+								while (true) {
+										String username = getUsername(scanner);
+										if (!checkAccountExist(username)) {
+												System.out.println("Could not locate an account with the username: " + username + "Please" +
+																"try again");
+												//Clear input
+												scanner.nextLine();
+										} else {
+												//LOGIN CODE GOES HERE
+												break;
+										}
+								}
+						case MENU_NO:
+								System.out.println("No problem, you can create one now!");
+				}
+
+
 				String username = getUsername(scanner);
-				createUsername(username, scanner);
+				createAccount(username, scanner);
+
 
 		}
 
