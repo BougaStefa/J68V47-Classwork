@@ -189,7 +189,7 @@ public class MathSoup {
 		//CALORIC CALCULATIONS END
 
 		//USER ACCOUNTS
-		public static void storeAccount(String username, String password) {
+		public static void storeAccountOld(String username, String password) {
 				//Stores the newly created account to a .txt file with the same name and also stores the password on a new line
 				String textName = username + ".txt";
 				try (PrintWriter out = new PrintWriter(new FileWriter(textName))) {
@@ -200,10 +200,11 @@ public class MathSoup {
 				}
 		}
 
+
 		public void createAccount(Scanner scanner) {
 				boolean accountCreated = false;
+				System.out.println("Please enter your username(No special characters allowed): ");
 				while (!accountCreated) {
-						System.out.println("Please enter your username(No special characters allowed): ");
 						String username = getValidUsername(scanner);
 						if (checkAccountExist(username)) {
 								System.out.println("An account with this username already exists.Try again.");
@@ -214,6 +215,17 @@ public class MathSoup {
 								storeAccount(username, password);
 								System.out.println("Account created successfully");
 						}
+				}
+		}
+
+		private void storeAccount(String username, String password) {
+				//Stores the newly created account to a .txt file with the same name and also stores the password on a new line
+				String textName = username + ".txt";
+				try (PrintWriter out = new PrintWriter(new FileWriter(textName))) {
+						out.println("Username:" + username);
+						out.println("Password:" + password);
+				} catch (IOException e) {
+						System.out.println("Error occurred saving account" + e.getMessage());
 				}
 		}
 
@@ -231,6 +243,7 @@ public class MathSoup {
 		public void runMathSoup(Scanner scanner) {
 				System.out.println("Welcome to MathSoup, do you have an account with us?");
 				int choice = DisplayAccountExist(scanner);
+				scanner.nextLine();
 				switch (choice) {
 						case MENU_YES:
 								//LOGIN CODE GOES HERE
@@ -243,6 +256,7 @@ public class MathSoup {
 								System.exit(0);
 				}
 		}
+
 
 		public static void main(String[] args) {
 				Scanner scanner = new Scanner(System.in);
