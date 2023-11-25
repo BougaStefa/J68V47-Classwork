@@ -59,18 +59,12 @@ public class MathSoup {
 				return getValidNumber(scanner, 18, 116);
 		}
 
-		public static boolean getValidUsername(String username) {
-				//acceptedChars includes everything that is NOT a-zA-Z0-9
-				String acceptedChars = "[^a-zA-Z0-9]";
-				Pattern pattern = Pattern.compile(acceptedChars);
-				//If anything matching is found it returns true meaning there's a special character
-				return pattern.matcher(username).find();
-		}
-
-		public String getUsername(Scanner scanner) {
+		public String getValidUsername(Scanner scanner) {
 				while (true) {
 						String username = scanner.nextLine();
-						if (getValidUsername(username)) {
+						String acceptedChars = "[^a-zA-Z0-9]";
+						Pattern pattern = Pattern.compile(acceptedChars);
+						if (pattern.matcher(username).find()) {
 								System.out.println("Please enter a valid username");
 						} else {
 								return username;
@@ -78,21 +72,14 @@ public class MathSoup {
 				}
 		}
 
-		public boolean getSpecificLengthString(String input, int minLength, int maxLength) {
-				return input.length() >= minLength && input.length() <= maxLength;
-		}
-
 		public String getValidPassword(Scanner scanner, int minLength, int maxLength) {
 				//Ensuring that a password of 9-20 characters is returned.
 				while (true) {
-						//Password cannot have spaces either , scanner.next takes care of that
-						String password = scanner.next();
+						String password = scanner.nextLine();
 						if (password.length() >= minLength && password.length() <= maxLength) {
 								return password;
 						} else {
-								System.out.println("Please make sure your password has at least 9 characters and at most 20");
-								//Clearing input buffer
-								scanner.nextLine();
+								System.out.printf("Please make sure your password has at least %d characters and at most %d%n", minLength, maxLength);
 						}
 				}
 		}
@@ -173,7 +160,7 @@ public class MathSoup {
 		}
 
 		public int DisplayAccountExist(Scanner scanner) {
-				System.out.printf("Do you already have an account?%n1.Yes%n2.No%n3.Exit%n");
+				System.out.printf("1.Yes%n2.No%n3.Exit%n");
 				int choice = getValidNumber(scanner, 1, 3);
 				return switch (choice) {
 						case MENU_YES -> 1;
@@ -187,10 +174,9 @@ public class MathSoup {
 						default -> 0;
 				};
 		}
-
-
 		//MENUS END
-//CALORIC CALCULATION
+
+		//CALORIC CALCULATION
 		public double caloricMaintenance(int sex, int weight, int height, int age, double activity) {
 				double calories;
 				if (sex == 1) {
@@ -200,43 +186,37 @@ public class MathSoup {
 				}
 				return calories;
 		}
-
-
 		//CALORIC CALCULATIONS END
+
 		//USER ACCOUNTS
-		public void createUsername(String username, Scanner scanner) {
-				while (true) {
-						if (!checkAccountExist(username)) {
-								try (PrintWriter out = new PrintWriter(new FileWriter(username + ".txt"))) {
-										out.println("Username:" + username);
-										System.out.println("Username created successfully!");
-								} catch (IOException e) {
-										System.out.println("Error occurred writing to file: " + e.getMessage());
-								}
-								break;
+		public static void storeAccount(String username, String password) {
+				//Stores the newly created account to a .txt file with the same name and also stores the password on a new line
+				String textName = username + ".txt";
+				try (PrintWriter out = new PrintWriter(new FileWriter(textName))) {
+						out.println("Username:" + username);
+						out.println("Password:" + password);
+				} catch (IOException e) {
+						System.out.println("Error occurred saving account" + e.getMessage());
+				}
+		}
+
+		public void createAccount(Scanner scanner) {
+				boolean accountCreated = false;
+				while (!accountCreated) {
+						System.out.println("Please enter your username(No special characters allowed): ");
+						String username = getValidUsername(scanner);
+						if (checkAccountExist(username)) {
+								System.out.println("An account with this username already exists.Try again.");
 						} else {
-								System.out.println("That username already exists.");
-								username = getUsername(scanner);
+								accountCreated = true;
+								System.out.println("Please enter a password(9-20 characters long)");
+								String password = getValidPassword(scanner, 9, 20);
+								storeAccount(username, password);
+								System.out.println("Account created successfully");
 						}
 				}
 		}
 
-		public void createPassword(String username, Scanner scanner) {
-				System.out.println("Please create a password between 9 and 20 characters long");
-				String password = getValidPassword(scanner, 9, 20);
-				String fileName = username + ".txt";
-				try (PrintWriter out = new PrintWriter(new FileWriter(fileName, true))) {
-						out.println("Password:" + password);
-						System.out.println("Password created successfully!");
-				} catch (IOException e) {
-						System.out.println("Error occurred writing password to file: " + e.getMessage());
-				}
-		}
-
-		public void createAccount(String username, Scanner scanner) {
-				createUsername(username, scanner);
-				createPassword(username, scanner);
-		}
 
 		public boolean checkAccountExist(String username) {
 				String accountFile = username + ".txt";
@@ -247,33 +227,20 @@ public class MathSoup {
 				return file.exists() && !file.isDirectory();
 		}
 
-
 		//MAIN
 		public void runMathSoup(Scanner scanner) {
 				System.out.println("Welcome to MathSoup, do you have an account with us?");
-				switch (DisplayAccountExist(scanner)) {
+				int choice = DisplayAccountExist(scanner);
+				switch (choice) {
 						case MENU_YES:
-								scanner.nextLine();
-								System.out.println("Please enter your username");
-								while (true) {
-										String username = getUsername(scanner);
-										if (!checkAccountExist(username)) {
-												System.out.println("Could not locate an account with the username: " + username + "Please" +
-																"try again");
-												//Clear input
-												scanner.nextLine();
-										} else {
-												//LOGIN CODE GOES HERE
-												System.out.println("yeet");
-												break;
-										}
-								}
+								//LOGIN CODE GOES HERE
 								break;
 						case MENU_NO:
-								scanner.nextLine();
-								System.out.printf("No problem, you can create one now!%nNote:No special characters allowed.%n");
-								String username = getUsername(scanner);
-								createAccount(username, scanner);
+								createAccount(scanner);
+								break;
+						case MENU_EXIT_SMALL:
+								System.out.println("Goodbye!");
+								System.exit(0);
 				}
 		}
 
