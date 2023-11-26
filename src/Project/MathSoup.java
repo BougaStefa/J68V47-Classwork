@@ -1,9 +1,6 @@
 package Project;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -270,13 +267,70 @@ public class MathSoup {
 				}
 		}
 
+		public boolean login(Scanner scanner) {
+				System.out.println("Please enter your username");
+				while (true) {
+						String username = getValidUsername(scanner);
+						String accountFile = username + ".txt";
+						if (checkAccountExist(username)) {
+								try (BufferedReader in = new BufferedReader(new FileReader(accountFile))) {
+										String line;
+										while ((line = in.readLine()) != null) {
+												if (line.startsWith("Password:")) {
+														System.out.println("Enter your password:");
+														String password = scanner.nextLine();
+														if (line.substring(9).equals(password)) {
+																System.out.println("Login successful!");
+																currentUsername = username;
+																return true;
+														} else {
+																System.out.println("Incorrect password.");
+																return false;
+														}
+												}
+										}
+								} catch (IOException e) {
+										System.out.println("Error reading file: " + e.getMessage());
+								}
+						} else {
+								System.out.println("An account with this username does not exist, please try again.");
+						}
+				}
+		}
+
+		public void readGoal(String username) {
+				String goal = null;
+				String calories = null;
+				try (BufferedReader in = new BufferedReader(new FileReader(username + ".txt"))) {
+						String line;
+						while ((line = in.readLine()) != null) {
+								if (line.startsWith("Goal:")) {
+										goal = line.substring(5);
+								}
+								if (line.startsWith("Calories:")) {
+										calories = line.substring(9);
+								}
+						}
+				} catch (IOException e) {
+						System.out.println("Error reading file: " + e.getMessage());
+				}
+				System.out.printf("Welcome %s. Hope your goal to %s weight by eating %s calories a day been going well!%n",
+								username, goal, calories);
+		}
+
 		public void runMathSoup(Scanner scanner) {
 				System.out.println("Welcome to MathSoup, do you have an account with us?");
 				int choice = displayAccountExist(scanner);
 				scanner.nextLine();
 				switch (choice) {
 						case MENU_YES:
-								// LOGIN CODE GOES HERE
+								while (true) {
+										if (login(scanner)) {
+												readGoal(currentUsername);
+												break;
+										}
+
+								}
 								break;
 						case MENU_NO:
 								createAccount(scanner);
