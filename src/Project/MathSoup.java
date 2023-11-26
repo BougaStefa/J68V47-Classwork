@@ -1,31 +1,36 @@
 package Project;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class MathSoup {
-		//CONSTANTS FOR CLARITY
-		final int MENU_GOAL_LOSE = 1;
-		final int MENU_GOAL_MAINTAIN = 2;
-		final int MENU_GOAL_GAIN = 3;
-		final int MENU_PACE_SLOW = 1;
-		final int MENU_PACE_NORMAL = 2;
-		final int MENU_PACE_FAST = 3;
-		final int MENU_SEX_MALE = 1;
-		final int MENU_SEX_FEMALE = 2;
-		final int MENU_ACTIVITY_SEDENTARY = 1;
-		final int MENU_ACTIVITY_LIGHT = 2;
-		final int MENU_ACTIVITY_MODERATE = 3;
-		final int MENU_ACTIVITY_ACTIVE = 4;
-		final int MENU_ACTIVITY_VERY_ACTIVE = 5;
-		final int MENU_EXIT = 4;
-		final int MENU_EXIT_BIG = 6;
-		final int MENU_EXIT_SMALL = 3;
-		final int MENU_YES = 1;
-		final int MENU_NO = 2;
 
-		//INPUT VALIDATION
+public class MathSoup {
+		private static final int MENU_GOAL_LOSE = 1;
+		private static final int MENU_GOAL_MAINTAIN = 2;
+		private static final int MENU_GOAL_GAIN = 3;
+		private static final int MENU_PACE_SLOW = 1;
+		private static final int MENU_PACE_NORMAL = 2;
+		private static final int MENU_PACE_FAST = 3;
+		private static final int MENU_SEX_MALE = 1;
+		private static final int MENU_SEX_FEMALE = 2;
+		private static final int MENU_ACTIVITY_SEDENTARY = 1;
+		private static final int MENU_ACTIVITY_LIGHT = 2;
+		private static final int MENU_ACTIVITY_MODERATE = 3;
+		private static final int MENU_ACTIVITY_ACTIVE = 4;
+		private static final int MENU_ACTIVITY_VERY_ACTIVE = 5;
+		private static final int MENU_EXIT = 4;
+		private static final int MENU_EXIT_BIG = 6;
+		private static final int MENU_EXIT_SMALL = 3;
+		private static final int MENU_YES = 1;
+		private static final int MENU_NO = 2;
+
+		private double maintenanceCalories;
+		private String currentUsername;
+
 		public static int getValidNumber(Scanner scanner, int min, int max) {
 				int number;
 				while (true) {
@@ -38,9 +43,8 @@ public class MathSoup {
 								}
 						} catch (java.util.InputMismatchException e) {
 								System.out.println("Please enter a valid number");
-								scanner.nextLine();//clear input
+								scanner.nextLine(); // clear input
 						}
-
 				}
 		}
 
@@ -73,20 +77,18 @@ public class MathSoup {
 		}
 
 		public String getValidPassword(Scanner scanner, int minLength, int maxLength) {
-				//Ensuring that a password of 9-20 characters is returned.
 				while (true) {
 						String password = scanner.nextLine();
 						if (password.length() >= minLength && password.length() <= maxLength) {
 								return password;
 						} else {
-								System.out.printf("Please make sure your password has at least %d characters and at most %d%n", minLength, maxLength);
+								System.out.printf("Please make sure your password has at least %d characters and at most %d%n",
+												minLength, maxLength);
 						}
 				}
 		}
-		//INPUT VALIDATION END
 
-		//MENUS
-		public int DisplayGoalMenu(Scanner scanner) {
+		public int displayGoalMenu(Scanner scanner) {
 				System.out.printf("What do you wish to do:%n1.Lose Weight%n2.Maintain Weight%n3.Gain Weight%n4.Exit%n");
 				int choice = getValidNumber(scanner, 1, 4);
 				return switch (choice) {
@@ -98,31 +100,23 @@ public class MathSoup {
 								System.exit(0);
 								yield 0;
 						}
-						//Impossible scenario
 						default -> 0;
 				};
 		}
 
-		public int DisplayPaceMenu(Scanner scanner) {
+		public int displayPaceMenu(Scanner scanner) {
 				System.out.printf("Pick your own pace:%n1.Slowly(0.25kg per week)%n2.Normal(0.5kg per week)%n" +
-								"3.Fast(1kg per week)%n4.Exit%n");
-				int choice = getValidNumber(scanner, 1, 4);
+								"3.Fast(1kg per week)%n");
+				int choice = getValidNumber(scanner, 1, 3);
 				return switch (choice) {
-						/*Numbers returned here are the calories in 0.25,0.5 and 1kg respectively*/
 						case MENU_PACE_SLOW -> 1925;
 						case MENU_PACE_NORMAL -> 3850;
 						case MENU_PACE_FAST -> 7700;
-						case MENU_EXIT -> {
-								System.out.println("Goodbye!");
-								System.exit(0);
-								yield 0;
-						}
-						//Impossible scenario
 						default -> 0;
 				};
 		}
 
-		public int DisplaySexMenu(Scanner scanner) {
+		public int displaySexMenu(Scanner scanner) {
 				System.out.printf("What is your birth sex?%n1.Male%n2.Female%n3.Exit%n");
 				int choice = getValidNumber(scanner, 1, 3);
 				return switch (choice) {
@@ -133,16 +127,14 @@ public class MathSoup {
 								System.exit(0);
 								yield 0;
 						}
-						//Impossible scenario
 						default -> 0;
 				};
 		}
 
-		public double DisplayActivityMenu(Scanner scanner) {
+		public double displayActivityMenu(Scanner scanner) {
 				System.out.printf("What is your current activity level?%n1.Sedentary%n2.Lightly Active%n" +
 								"3.Moderately Active%n4.Active%n5.Very Active%n6.Exit%n");
 				int choice = getValidNumber(scanner, 1, 6);
-				/* AFTER ENSURING A VALID OPTION IS PICKED WE RETURN THE ACTIVITY COEFFICIENT */
 				return switch (choice) {
 						case MENU_ACTIVITY_SEDENTARY -> 1.2;
 						case MENU_ACTIVITY_LIGHT -> 1.375;
@@ -154,12 +146,11 @@ public class MathSoup {
 								System.exit(0);
 								yield 0;
 						}
-						//Impossible scenario
 						default -> 0;
 				};
 		}
 
-		public int DisplayAccountExist(Scanner scanner) {
+		public int displayAccountExist(Scanner scanner) {
 				System.out.printf("1.Yes%n2.No%n3.Exit%n");
 				int choice = getValidNumber(scanner, 1, 3);
 				return switch (choice) {
@@ -170,13 +161,10 @@ public class MathSoup {
 								System.exit(0);
 								yield 0;
 						}
-						//Impossible scenario
 						default -> 0;
 				};
 		}
-		//MENUS END
 
-		//CALORIC CALCULATION
 		public double caloricMaintenance(int sex, int weight, int height, int age, double activity) {
 				double calories;
 				if (sex == 1) {
@@ -186,20 +174,29 @@ public class MathSoup {
 				}
 				return calories;
 		}
-		//CALORIC CALCULATIONS END
 
-		//USER ACCOUNTS
-		public static void storeAccountOld(String username, String password) {
-				//Stores the newly created account to a .txt file with the same name and also stores the password on a new line
-				String textName = username + ".txt";
-				try (PrintWriter out = new PrintWriter(new FileWriter(textName))) {
-						out.println("Username:" + username);
-						out.println("Password:" + password);
-				} catch (IOException e) {
-						System.out.println("Error occurred saving account" + e.getMessage());
-				}
+		public void initialMessage(Scanner scanner) {
+				System.out.println("Welcome! Let us proceed with your initial calorie recommendation. Please answer" +
+								"the following questions: ");
+				maintenanceCalories = caloricMaintenance(displaySexMenu(scanner), getValidWeight(scanner),
+								getValidHeight(scanner), getValidAge(scanner), displayActivityMenu(scanner));
+				System.out.printf("Based on that information your daily maintenance calories are: %.0f%n",
+								maintenanceCalories);
+				scanner.nextLine();
 		}
 
+		public double caloriesBasedOnGoal(int goal, int pace, double maintenance) {
+				switch (goal) {
+						case MENU_GOAL_LOSE:
+								return maintenance - pace / 7;
+						case MENU_GOAL_MAINTAIN:
+								return maintenance;
+						case MENU_GOAL_GAIN:
+								return maintenance + pace / 7;
+						default:
+								return 0;
+				}
+		}
 
 		public void createAccount(Scanner scanner) {
 				boolean accountCreated = false;
@@ -212,14 +209,14 @@ public class MathSoup {
 								accountCreated = true;
 								System.out.println("Please enter a password(9-20 characters long)");
 								String password = getValidPassword(scanner, 9, 20);
-								storeAccount(username, password);
+								storeAccountToFile(username, password);
 								System.out.println("Account created successfully");
+								currentUsername = username;
 						}
 				}
 		}
 
-		private void storeAccount(String username, String password) {
-				//Stores the newly created account to a .txt file with the same name and also stores the password on a new line
+		private void storeAccountToFile(String username, String password) {
 				String textName = username + ".txt";
 				try (PrintWriter out = new PrintWriter(new FileWriter(textName))) {
 						out.println("Username:" + username);
@@ -229,34 +226,68 @@ public class MathSoup {
 				}
 		}
 
-
 		public boolean checkAccountExist(String username) {
 				String accountFile = username + ".txt";
-				//Created file object with the naming scheme username.txt
 				File file = new File(accountFile);
-				//If it returns false the file does not exist meaning the account does not exist
-				//Returning true means it exists
 				return file.exists() && !file.isDirectory();
 		}
 
-		//MAIN
+		public void storeGoalToFile(Scanner scanner, String username, double calories) {
+				int goal = displayGoalMenu(scanner);
+				switch (goal) {
+						case MENU_GOAL_LOSE:
+								try (PrintWriter out = new PrintWriter(new FileWriter(username + ".txt", true))) {
+										out.println("Goal:Lose");
+										out.println("Calories:" + Math.round(caloriesBasedOnGoal
+														(goal, displayPaceMenu(scanner), maintenanceCalories)));
+										System.out.println("Your preferences have been stored in your profile.");
+								} catch (IOException e) {
+										System.out.println("Error storing to file" + e.getMessage());
+								}
+								break;
+						case MENU_GOAL_MAINTAIN:
+								try (PrintWriter out = new PrintWriter(new FileWriter(username + ".txt", true))) {
+										out.println("Goal:Maintain");
+										out.println("Calories:" + Math.round(caloriesBasedOnGoal
+														(goal, displayPaceMenu(scanner), maintenanceCalories)));
+										System.out.println("Your preferences have been stored in your profile.");
+								} catch (IOException e) {
+										System.out.println("Error storing to file" + e.getMessage());
+								}
+								break;
+						case MENU_GOAL_GAIN:
+								try (PrintWriter out = new PrintWriter(new FileWriter(username + ".txt", true))) {
+										out.println("Goal:Gain");
+										out.println("Calories:" + Math.round(caloriesBasedOnGoal
+														(goal, displayPaceMenu(scanner), maintenanceCalories)));
+										System.out.println("Your preferences have been stored in your profile.");
+								} catch (IOException e) {
+										System.out.println("Error storing to file" + e.getMessage());
+								}
+								break;
+						default:
+								throw new IllegalStateException("Unexpected value: " + displayGoalMenu(scanner));
+				}
+		}
+
 		public void runMathSoup(Scanner scanner) {
 				System.out.println("Welcome to MathSoup, do you have an account with us?");
-				int choice = DisplayAccountExist(scanner);
+				int choice = displayAccountExist(scanner);
 				scanner.nextLine();
 				switch (choice) {
 						case MENU_YES:
-								//LOGIN CODE GOES HERE
+								// LOGIN CODE GOES HERE
 								break;
 						case MENU_NO:
 								createAccount(scanner);
+								initialMessage(scanner);
+								storeGoalToFile(scanner, currentUsername, maintenanceCalories);
 								break;
 						case MENU_EXIT_SMALL:
 								System.out.println("Goodbye!");
 								System.exit(0);
 				}
 		}
-
 
 		public static void main(String[] args) {
 				Scanner scanner = new Scanner(System.in);
