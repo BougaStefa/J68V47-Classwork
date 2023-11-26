@@ -298,6 +298,38 @@ public class MathSoup {
 				}
 		}
 
+		public double caloriesTwoWeeks(Scanner scanner) {
+				double totalCalories = 0;
+				for (int i = 1; i <= 14; i++) {
+						System.out.printf("How many calories did you consume on day %d%n", i);
+						double calories = getValidNumber(scanner, 600, 8000);
+						if (calories <= 1200) {
+								System.out.println("Please note that this low a calorie intake can be a health risk");
+						}
+						totalCalories += calories;
+				}
+
+				return Math.round(totalCalories / 14);
+		}
+
+		public double recalibrationSequence(Scanner scanner) {
+				System.out.println("Have you been collected weight and calorie data as instructed?");
+				int choice = getValidNumber(scanner, 1, 2);
+				switch (choice) {
+						case MENU_YES:
+								collectCalorieData();
+								collectWeightData();
+						case MENU_NO:
+								System.out.println("Please collect weight and calorie data for the next 14 days and then come back");
+								System.exit(0);
+						default:
+								//Impossible scenario
+								System.out.println("Goodbye!");
+								System.exit(0);
+								return 0;
+				}
+		}
+
 		public void readGoal(String username) {
 				String goal = null;
 				String calories = null;
@@ -327,6 +359,7 @@ public class MathSoup {
 								while (true) {
 										if (login(scanner)) {
 												readGoal(currentUsername);
+
 												break;
 										}
 
