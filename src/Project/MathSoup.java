@@ -348,7 +348,7 @@ public class MathSoup {
 
 		public void recalibrationSequence(Scanner scanner) {
 				System.out.println("Have you been collected weight and calorie data as instructed?");
-				System.out.println("1.Yes%n2.No");
+				System.out.printf("1.Yes%n2.No%n");
 				int choice = getValidNumber(scanner, 1, 2);
 				long totalCalories = totalCaloriesTwoWeeks(scanner);
 				long totalWeight = totalWeightTwoWeeks(scanner);
