@@ -27,6 +27,11 @@ public class MathSoup {
 
 		private double maintenanceCalories;
 		private String currentUsername;
+		private long startingWeight;
+		private String userGoal;
+		private String userPace;
+		private static final int DAYS = 14;
+		private static final int WEEKDAYS = 7;
 
 		public static int getValidNumber(Scanner scanner, int min, int max) {
 				int number;
@@ -44,6 +49,7 @@ public class MathSoup {
 						}
 				}
 		}
+
 
 		public static int getValidWeight(Scanner scanner) {
 				System.out.println("Please enter your current weight in Kilograms");
@@ -105,10 +111,20 @@ public class MathSoup {
 				System.out.printf("Pick your own pace:%n1.Slowly(0.25kg per week)%n2.Normal(0.5kg per week)%n" +
 								"3.Fast(1kg per week)%n");
 				int choice = getValidNumber(scanner, 1, 3);
+				//Impossible scenario
 				return switch (choice) {
-						case MENU_PACE_SLOW -> 1925;
-						case MENU_PACE_NORMAL -> 3850;
-						case MENU_PACE_FAST -> 7700;
+						case MENU_PACE_SLOW -> {
+								userPace = "Slowly";
+								yield 1925;
+						}
+						case MENU_PACE_NORMAL -> {
+								userPace = "Normal";
+								yield 3850;
+						}
+						case MENU_PACE_FAST -> {
+								userPace = "Fast";
+								yield 7700;
+						}
 						default -> 0;
 				};
 		}
@@ -175,24 +191,25 @@ public class MathSoup {
 		public void initialMessage(Scanner scanner) {
 				System.out.println("Welcome! Let us proceed with your initial calorie recommendation. Please answer" +
 								"the following questions: ");
-				maintenanceCalories = caloricMaintenance(displaySexMenu(scanner), getValidWeight(scanner),
-								getValidHeight(scanner), getValidAge(scanner), displayActivityMenu(scanner));
+				maintenanceCalories = Math.round(caloricMaintenance(displaySexMenu(scanner), getValidWeight(scanner),
+								getValidHeight(scanner), getValidAge(scanner), displayActivityMenu(scanner)));
+				try (PrintWriter out = new PrintWriter(new FileWriter(currentUsername + ".txt", true))) {
+						out.println("Maintenance:" + maintenanceCalories);
+				} catch (IOException e) {
+						System.out.println("Error storing to file" + e.getMessage());
+				}
 				System.out.printf("Based on that information your daily maintenance calories are: %.0f%n",
 								maintenanceCalories);
 				scanner.nextLine();
 		}
 
 		public double caloriesBasedOnGoal(int goal, int pace, double maintenance) {
-				switch (goal) {
-						case MENU_GOAL_LOSE:
-								return maintenance - pace / 7;
-						case MENU_GOAL_MAINTAIN:
-								return maintenance;
-						case MENU_GOAL_GAIN:
-								return maintenance + pace / 7;
-						default:
-								return 0;
-				}
+				return switch (goal) {
+						case MENU_GOAL_LOSE -> maintenance - (double) pace / WEEKDAYS;
+						case MENU_GOAL_MAINTAIN -> maintenance;
+						case MENU_GOAL_GAIN -> maintenance + (double) pace / WEEKDAYS;
+						default -> 0;
+				};
 		}
 
 		public void createAccount(Scanner scanner) {
@@ -229,41 +246,48 @@ public class MathSoup {
 				return file.exists() && !file.isDirectory();
 		}
 
-		public void storeGoalToFile(Scanner scanner, String username, double calories) {
+		public void storeGoalToFile(Scanner scanner, String username) {
 				int goal = displayGoalMenu(scanner);
 				switch (goal) {
-						case MENU_GOAL_LOSE:
+						case MENU_GOAL_LOSE -> {
 								try (PrintWriter out = new PrintWriter(new FileWriter(username + ".txt", true))) {
 										out.println("Goal:Lose");
-										out.println("Calories:" + Math.round(caloriesBasedOnGoal
-														(goal, displayPaceMenu(scanner), maintenanceCalories)));
+										double newTarget = Math.round(caloriesBasedOnGoal
+														(goal, displayPaceMenu(scanner), maintenanceCalories));
+										out.println("Calories:" + newTarget);
+										out.println("Pace:" + userPace);
+										System.out.println("Your new target calories is: " + newTarget);
 										System.out.println("Your preferences have been stored in your profile.");
 								} catch (IOException e) {
 										System.out.println("Error storing to file" + e.getMessage());
 								}
-								break;
-						case MENU_GOAL_MAINTAIN:
+						}
+						case MENU_GOAL_MAINTAIN -> {
 								try (PrintWriter out = new PrintWriter(new FileWriter(username + ".txt", true))) {
 										out.println("Goal:Maintain");
-										out.println("Calories:" + Math.round(caloriesBasedOnGoal
-														(goal, displayPaceMenu(scanner), maintenanceCalories)));
+										double newTarget = Math.round(caloriesBasedOnGoal
+														(goal, displayPaceMenu(scanner), maintenanceCalories));
+										out.println("Calories:" + newTarget);
+										out.println("Pace:" + userPace);
 										System.out.println("Your preferences have been stored in your profile.");
 								} catch (IOException e) {
 										System.out.println("Error storing to file" + e.getMessage());
 								}
-								break;
-						case MENU_GOAL_GAIN:
+						}
+						case MENU_GOAL_GAIN -> {
 								try (PrintWriter out = new PrintWriter(new FileWriter(username + ".txt", true))) {
 										out.println("Goal:Gain");
-										out.println("Calories:" + Math.round(caloriesBasedOnGoal
-														(goal, displayPaceMenu(scanner), maintenanceCalories)));
+										double newTarget = Math.round(caloriesBasedOnGoal
+														(goal, displayPaceMenu(scanner), maintenanceCalories));
+										out.println("Calories:" + newTarget);
+										out.println("Pace:" + userPace);
+										System.out.println("Your new target calories is: " + newTarget);
 										System.out.println("Your preferences have been stored in your profile.");
 								} catch (IOException e) {
 										System.out.println("Error storing to file" + e.getMessage());
 								}
-								break;
-						default:
-								throw new IllegalStateException("Unexpected value: " + displayGoalMenu(scanner));
+						}
+						default -> throw new IllegalStateException("Unexpected value: " + displayGoalMenu(scanner));
 				}
 		}
 
@@ -298,36 +322,152 @@ public class MathSoup {
 				}
 		}
 
-		public double caloriesTwoWeeks(Scanner scanner) {
-				double totalCalories = 0;
-				for (int i = 1; i <= 14; i++) {
-						System.out.printf("How many calories did you consume on day %d%n", i);
-						double calories = getValidNumber(scanner, 600, 8000);
-						if (calories <= 1200) {
-								System.out.println("Please note that this low a calorie intake can be a health risk");
+		public long totalWeightTwoWeeks(Scanner scanner) {
+				double totalWeight = 0;
+				for (int i = 1; i <= DAYS; i++) {
+						System.out.printf("What was your weight on day %d%n", i);
+						int weight = getValidNumber(scanner, 30, 500);
+						if (i == 1) {
+								startingWeight = weight;
 						}
-						totalCalories += calories;
+						totalWeight += weight;
 				}
-
-				return Math.round(totalCalories / 14);
+				return Math.round(totalWeight);
 		}
 
-		public double recalibrationSequence(Scanner scanner) {
+		public long totalCaloriesTwoWeeks(Scanner scanner) {
+				double totalCalories = 0;
+				for (int i = 1; i <= DAYS; i++) {
+						System.out.printf("How many calories did you eat on day %d%n", i);
+						int calories = getValidNumber(scanner, 1200, 10000);
+						totalCalories += calories;
+				}
+				return Math.round(totalCalories);
+		}
+
+
+		public void recalibrationSequence(Scanner scanner) {
 				System.out.println("Have you been collected weight and calorie data as instructed?");
+				System.out.println("1.Yes%n2.No");
 				int choice = getValidNumber(scanner, 1, 2);
+				long totalCalories = totalCaloriesTwoWeeks(scanner);
+				long totalWeight = totalWeightTwoWeeks(scanner);
+				long weightChange = totalWeight / DAYS - startingWeight;
 				switch (choice) {
-						case MENU_YES:
-								collectCalorieData();
-								collectWeightData();
-						case MENU_NO:
+						case MENU_YES -> {
+								if ("Lose".equals(userGoal)) {
+										double expectedWeightChange = switch (userPace) {
+												case "Slow" -> -0.5;
+												case "Normal" -> -1;
+												case "Fast" -> -2;
+												default -> 0.0;
+										};
+										if (weightChange <= expectedWeightChange) {
+												System.out.println("Congratulations! You are on track with your weight loss goal.");
+										} else {
+												long newCalories = recalculateCalories(weightChange, expectedWeightChange / 2,
+																(double) totalCalories / DAYS);
+												System.out.printf("Your new daily calorie intake should be %d%n", newCalories);
+												try (BufferedReader in = new BufferedReader(new FileReader(currentUsername + ".txt"))) {
+														String line;
+														StringBuilder sb = new StringBuilder();
+														while ((line = in.readLine()) != null) {
+																if (line.startsWith("Calories:")) {
+																		line = "Calories:" + newCalories;
+																}
+																sb.append(line).append("\n");
+														}
+														try (PrintWriter out = new PrintWriter(new FileWriter(currentUsername + ".txt"))) {
+																out.println(sb);
+														} catch (IOException e) {
+																System.out.println("Error storing to file" + e.getMessage());
+														}
+												} catch (IOException e) {
+														System.out.println("Error reading file: " + e.getMessage());
+												}
+
+										}
+								} else if ("Maintain".equals(userGoal)) {
+										//Considered maintained if weight change is between -0.2 and 0.2
+										if (weightChange >= -0.2 && weightChange <= 0.2) {
+												System.out.println("Congratulations! You are on track with your weight maintenance goal.");
+										} else {
+												long newCalories = recalculateCalories(weightChange, 1,
+																(double) totalCalories / DAYS);
+												System.out.printf("Your new daily calorie intake should be %d%n", newCalories);
+												try (BufferedReader in = new BufferedReader(new FileReader(currentUsername + ".txt"))) {
+														String line;
+														StringBuilder sb = new StringBuilder();
+														while ((line = in.readLine()) != null) {
+																if (line.startsWith("Calories:")) {
+																		line = "Calories:" + newCalories;
+																}
+																sb.append(line).append("\n");
+														}
+														try (PrintWriter out = new PrintWriter(new FileWriter(currentUsername + ".txt"))) {
+																out.println(sb);
+														} catch (IOException e) {
+																System.out.println("Error storing to file" + e.getMessage());
+														}
+												} catch (IOException e) {
+														System.out.println("Error reading file: " + e.getMessage());
+												}
+										}
+								} else if ("Gain".equals(userGoal)) {
+										double expectedWeightChange = switch (userPace) {
+												case "Slow" -> 0.5;
+												case "Normal" -> 1;
+												case "Fast" -> 2;
+												default -> 0.0;
+										};
+										if (weightChange <= expectedWeightChange) {
+												System.out.println("Congratulations! You are on track with your weight gain goal.");
+										} else {
+												long newCalories = recalculateCalories(weightChange, expectedWeightChange / 2,
+																(double) totalCalories / DAYS);
+												System.out.printf("Your new daily calorie intake should be %d%n", newCalories);
+												try (BufferedReader in = new BufferedReader(new FileReader(currentUsername + ".txt"))) {
+														String line;
+														StringBuilder sb = new StringBuilder();
+														while ((line = in.readLine()) != null) {
+																if (line.startsWith("Calories:")) {
+																		line = "Calories:" + newCalories;
+																}
+																sb.append(line).append("\n");
+														}
+														try (PrintWriter out = new PrintWriter(new FileWriter(currentUsername + ".txt"))) {
+																out.println(sb);
+														} catch (IOException e) {
+																System.out.println("Error storing to file" + e.getMessage());
+														}
+												} catch (IOException e) {
+														System.out.println("Error reading file: " + e.getMessage());
+												}
+										}
+								}
+						}
+						case MENU_NO -> {
 								System.out.println("Please collect weight and calorie data for the next 14 days and then come back");
 								System.exit(0);
-						default:
+						}
+						default -> {
 								//Impossible scenario
 								System.out.println("Goodbye!");
 								System.exit(0);
-								return 0;
+						}
 				}
+		}
+
+		public long recalculateCalories(long weightChange, double pace, double maintenance) {
+				double newCalories = switch ((int) weightChange) {
+						case -2 -> maintenance - pace * 500;
+						case -1 -> maintenance - pace * 250;
+						case 0 -> maintenance;
+						case 1 -> maintenance + pace * 250;
+						case 2 -> maintenance + pace * 500;
+						default -> 0;
+				};
+				return Math.round(newCalories);
 		}
 
 		public void readGoal(String username) {
@@ -338,9 +478,17 @@ public class MathSoup {
 						while ((line = in.readLine()) != null) {
 								if (line.startsWith("Goal:")) {
 										goal = line.substring(5);
+										//For future use.
+										userGoal = goal;
 								}
 								if (line.startsWith("Calories:")) {
 										calories = line.substring(9);
+								}
+								if (line.startsWith("Pace:")) {
+										userPace = line.substring(5);
+								}
+								if (line.startsWith("Maintenance:")) {
+										maintenanceCalories = Double.parseDouble(line.substring(12));
 								}
 						}
 				} catch (IOException e) {
@@ -355,24 +503,24 @@ public class MathSoup {
 				int choice = displayAccountExist(scanner);
 				scanner.nextLine();
 				switch (choice) {
-						case MENU_YES:
+						case MENU_YES -> {
 								while (true) {
 										if (login(scanner)) {
 												readGoal(currentUsername);
-
+												recalibrationSequence(scanner);
 												break;
 										}
-
 								}
-								break;
-						case MENU_NO:
+						}
+						case MENU_NO -> {
 								createAccount(scanner);
 								initialMessage(scanner);
-								storeGoalToFile(scanner, currentUsername, maintenanceCalories);
-								break;
-						case MENU_EXIT_SMALL:
+								storeGoalToFile(scanner, currentUsername);
+						}
+						case MENU_EXIT_SMALL -> {
 								System.out.println("Goodbye!");
 								System.exit(0);
+						}
 				}
 		}
 
@@ -380,5 +528,6 @@ public class MathSoup {
 				Scanner scanner = new Scanner(System.in);
 				MathSoup mathsoup = new MathSoup();
 				mathsoup.runMathSoup(scanner);
+				scanner.close();
 		}
 }
