@@ -42,7 +42,7 @@ public class L12E2 {
 
     public static void main(String[] args) {
         // load file contents into an array of student objects
-        ArrayList<Student> thisClass = loadFile("C://Users//30216829//IdeaProjects//J68V47-Classwork//src//Lesson12//students.txt/");
+        ArrayList<Student> thisClass = loadFile("src\\Lesson12\\students.txt");
         // loop for all objects and show details
         for (int i = 0; i < thisClass.size(); i++) {
             Student thisStudent = thisClass.get(i);

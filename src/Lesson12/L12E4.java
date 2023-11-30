@@ -9,7 +9,7 @@ import java.util.List;
 
 public class L12E4 {
     public static void main(String[] args) {
-        ArrayList<Car> carList = loadFile("C://Users//30216829//IdeaProjects//J68V47-Classwork//src//Lesson12//carSales.txt/");
+        ArrayList<Car> carList = loadFile("src//Lesson12//carSales.txt/");
         for (int i = 0; i < carList.size(); i++) {
             Car thisCar = carList.get(i);
             displayCars(thisCar);
