@@ -80,6 +80,7 @@ public class L9E2 {
         //Cannot execute toUpperCase on a null string
         try {
             String exception7 = null;
+            //@ts-ignore
             System.out.println(exception7.toUpperCase());
         } catch (Exception e) {
             System.out.println(e.toString());
