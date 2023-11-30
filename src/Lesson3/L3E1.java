@@ -13,5 +13,6 @@ public class L3E1 {
 				int dob = input.nextInt();
 				System.out.println("Your username is :" + firstName.substring(0, 1) + lastName.toLowerCase());
 				System.out.println("Your password is :" + lastName.substring(0, 1).toLowerCase() + firstName.substring(0, 3).toUpperCase() + dob);
+				input.close();
 		}
 }

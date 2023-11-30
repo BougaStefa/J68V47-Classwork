@@ -7,9 +7,9 @@ public class L7E1 {
 				System.out.println("1.Say \"Hello!\"\n2.Tell me the time\n3.Tell me a joke\n4.Quit");
 		}
 
-		public static int getOption() {
-				Scanner input = new Scanner(System.in);
-				return input.nextInt();
+		public static int getOption(Scanner scanner) {
+				int option = scanner.nextInt();
+				return option;
 		}
 
 		public static void optionResp(String message) {
@@ -17,22 +17,24 @@ public class L7E1 {
 		}
 
 		public static void main(String[] args) {
-				int option;
+				Scanner scanner = new Scanner(System.in);
+				int choice;
 				do {
 						showMenu();
-						option = getOption();
-						if (option == 1) {
+						choice = getOption(scanner);
+						if (choice == 1) {
 								optionResp("Hello!");
-						} else if (option == 2) {
+						} else if (choice == 2) {
 								optionResp("The time is x");
-						} else if (option == 3) {
+						} else if (choice == 3) {
 								optionResp("Big funny joke haha");
-						} else if (option == 4) {
+						} else if (choice == 4) {
 								optionResp("Bye!");
 						} else {
 								optionResp("Not a valid entry.Pick between 1 and 4");
 						}
-				} while (option != 4);
+				} while (choice != 4);
+			
 		}
 }
 

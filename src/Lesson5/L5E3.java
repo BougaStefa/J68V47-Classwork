@@ -14,5 +14,6 @@ public class L5E3 {
 						}
 				}
 				System.out.println("Congratulations you got " + score + " questions right!!");
+				input.close();
 		}
 }

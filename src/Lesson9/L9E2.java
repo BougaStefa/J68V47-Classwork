@@ -21,6 +21,7 @@ public class L9E2 {
         // Exceeding max value
         try {
             int exception2 = Integer.MAX_VALUE + 1;
+            System.out.println(exception2);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -32,6 +33,7 @@ public class L9E2 {
         try {
             int[] myArray3 = new int[5];
             int exception3 = myArray3[5];
+            System.out.println(exception3);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -43,6 +45,7 @@ public class L9E2 {
         try {
             int[] myArray4 = null;
             int exception4 = myArray4[0];
+            System.out.println(exception4);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -54,6 +57,7 @@ public class L9E2 {
         try {
             File exception5 = new File("exception5.txt");
             Scanner scanner = new Scanner(exception5);
+            scanner.close();
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -65,6 +69,7 @@ public class L9E2 {
         try {
             String thisString = "Hello";
             int exception6 = Integer.parseInt(thisString);
+            System.out.println(exception6);
         } catch (Exception e) {
             System.out.println(e.toString());
         }

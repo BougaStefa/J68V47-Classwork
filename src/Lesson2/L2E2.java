@@ -21,5 +21,6 @@ public class L2E2 {
 				System.out.println(firstNum + "/" + secondNum + "=" + division);
 				System.out.println(firstNum + "%" + secondNum + "=" + modulo);
 				System.out.println(firstNum + "^" + secondNum + "=" + exponent);
+				input.close();
 		}
 }

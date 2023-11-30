@@ -26,5 +26,6 @@ public class L6E3 {
 				if (lives > 0) {
 						System.out.println("Well done, you got " + score + " out of 10 correct!");
 				}
+				input.close();
 		}
 }

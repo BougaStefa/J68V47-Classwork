@@ -14,13 +14,12 @@ public class L7ExB {
 				System.out.printf("Do you wish to:%n1.Go back to main menu%n2.Quit%n");
 		}
 
-		public static int getOption() {
-				Scanner input = new Scanner(System.in);
+		public static int getOption(Scanner input) {
+			
 				return input.nextInt();
 		}
 
-		public static int askQuestion(int rand1, int rand2) {
-				Scanner input = new Scanner(System.in);
+		public static int askQuestion(int rand1, int rand2,Scanner input) {
 				System.out.println("What is " + rand1 + " + " + rand2 + " ?");
 				return input.nextInt();
 		}
@@ -46,10 +45,11 @@ public class L7ExB {
 		}
 
 		public static void main(String[] args) {
+			Scanner input = new Scanner(System.in);
 				int option;
 				do {
 						showMenu();
-						option = getOption();
+						option = getOption(input);
 						if (option == 1) {
 								Random random = new Random();
 								int score = 0;
@@ -60,7 +60,7 @@ public class L7ExB {
 								while (count <= 10 && lives > 0) {
 										int num1 = random.nextInt(100);
 										int num2 = random.nextInt(100);
-										userAnswer = askQuestion(num1, num2);
+										userAnswer = askQuestion(num1, num2,input);
 										rightAnswer = num1 + num2;
 										if (userAnswer == rightAnswer) {
 												score = correctAnswer(score);
@@ -80,7 +80,7 @@ public class L7ExB {
 								while (count <= 10 && lives > 0) {
 										int num1 = random.nextInt(5);
 										int num2 = random.nextInt(5);
-										userAnswer = askQuestion(num1, num2);
+										userAnswer = askQuestion(num1, num2,input);
 										rightAnswer = num1 * num2;
 										if (userAnswer == rightAnswer) {
 												score = correctAnswer(score);
@@ -99,11 +99,12 @@ public class L7ExB {
 								System.out.println("Not a valid entry.Pick between 1 and 3");
 						}
 						showMenu2();
-						option = getOption();
+						option = getOption(input);
 						if (option == 2) {
 								System.out.println("Bye!");
 						}
 				} while (option == 1);
+				input.close();
 		}
 }
 

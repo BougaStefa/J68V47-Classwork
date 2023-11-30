@@ -36,6 +36,7 @@ public class L12E4 {
                 carList.add(newCar);
                 line = in.readLine();
             }
+            in.close();
         } catch (IOException e) {
             System.out.println("Error occurred reading file: " + e.toString());
         }

@@ -14,5 +14,6 @@ public class L3E2 {
 				System.out.println("What is the capital of Italy");
 				String answer3 = input.nextLine().toUpperCase();
 				System.out.println(answer3.contains("ROME"));
+				input.close();
 		}
 }

@@ -24,5 +24,6 @@ public class L4E4c {
 				} else {
 						System.out.println("I said between 1 and 7, try again");
 				}
+				input.close();
 		}
 }

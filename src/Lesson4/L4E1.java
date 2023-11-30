@@ -23,5 +23,6 @@ public class L4E1 {
 						System.out.println("You get a free toaster!");
 				}
 				System.out.println("Have a nice day");
+				input.close();
 		}
 }

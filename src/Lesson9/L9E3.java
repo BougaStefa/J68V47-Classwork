@@ -1,6 +1,5 @@
 package Lesson9;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 //Using the code provided for the test,my L7E3 is different.
@@ -16,6 +15,7 @@ public class L9E3 {
         } catch (java.util.InputMismatchException e) {
             System.out.println("Enter a valid number");
         }
+        scanner.close();
         return userAnswer;
     }
 

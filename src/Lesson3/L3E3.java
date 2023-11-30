@@ -15,5 +15,6 @@ public class L3E3 {
 				float n = yrs * 12;
 				float mPay = (float) (loan * (j / (1 - Math.pow(1 + j, -n))));
 				System.out.format("Monthly Payment is: £ %.2f ", mPay);
+				input.close();
 		}
 }

@@ -15,5 +15,6 @@ public class L4E3 {
 						pAmount = pAmount + 10;
 				}
 				System.out.println("Your total including shipping is: " + pAmount);
+				input.close();
 		}
 }

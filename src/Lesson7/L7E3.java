@@ -4,10 +4,10 @@ package Lesson7;
 import java.util.*;
 
 public class L7E3 {
-		public static int askQuestion(int rand1, int rand2) {
-				Scanner input = new Scanner(System.in);
+		public static int askQuestion(int rand1, int rand2,Scanner scanner) {
 				System.out.println("What is " + rand1 + " + " + rand2 + " ?");
-				return input.nextInt();
+				int input = scanner.nextInt();
+				return input;
 		}
 
 		public static int correctAnswer(int score) {
@@ -32,6 +32,7 @@ public class L7E3 {
 
 		public static void main(String[] args) {
 				Random random = new Random();
+				Scanner scanner = new Scanner(System.in);
 				int score = 0;
 				int lives = 3;
 				int userAnswer;
@@ -40,7 +41,7 @@ public class L7E3 {
 				while (count <= 10 && lives > 0) {
 						int num1 = random.nextInt(420);
 						int num2 = random.nextInt(69);
-						userAnswer = askQuestion(num1, num2);
+						userAnswer = askQuestion(num1, num2,scanner);
 						rightAnswer = num1 + num2;
 						if (userAnswer == rightAnswer) {
 								score = correctAnswer(score);

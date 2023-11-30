@@ -134,6 +134,8 @@ public class MathUtility {
 								System.out.printf("Goodbye!%n");
 						}
 						//Secondary menu terminates if the user selects the Quit option
+						input.close();
 				} while (userContinue != 2);
+				input.close();
 		}
 }

@@ -10,5 +10,6 @@ public class L2E1 {
 				System.out.print("What is your hobby? ");
 				String hobby = input.nextLine();
 				System.out.println("Hello " + name + ", I heard that you are interested in " + hobby + ", how dull");
+				input.close();
 		}
 }

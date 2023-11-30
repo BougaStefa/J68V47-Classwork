@@ -10,5 +10,6 @@ public class L5E1 {
 				for (int count = 1; count < 13; count++) {
 						System.out.println(num + " x " + count + " = " + num * count);
 				}
+				input.close();
 		}
 }

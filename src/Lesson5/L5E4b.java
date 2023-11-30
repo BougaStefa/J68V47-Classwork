@@ -20,6 +20,7 @@ public class L5E4b {
 						}
 				}
 				System.out.println(result);
+				input.close();
 		}
 }
 

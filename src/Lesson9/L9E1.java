@@ -21,7 +21,6 @@ public class L9E1 {
                 break;
             }
         }
-
-
+        scanner.close();
     }
 }

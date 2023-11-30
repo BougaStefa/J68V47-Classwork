@@ -12,5 +12,6 @@ public class L5E4a {
 						fact *= count;
 				}
 				System.out.println("The factorial of " + n + " is " + fact);
+				input.close();
 		}
 }

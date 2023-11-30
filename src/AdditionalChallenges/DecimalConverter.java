@@ -32,5 +32,6 @@ public class DecimalConverter {
 				} else {
 						System.out.println("Invalid or Unsupported number type. Terminating converter.");
 				}
+				input.close();
 		}
 }

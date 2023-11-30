@@ -27,5 +27,6 @@ public class L2E3 {
 				System.out.format("......... £ %.2f %n", price3);
 				System.out.print("Subtotal");
 				System.out.format("......... £ %.2f %n", subtotal);
+				input.close();
 		}
 }

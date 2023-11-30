@@ -20,5 +20,6 @@ public class L4E2 {
 				if (!answer3.equals("ROME")) {
 						System.out.println("Sorry, the correct answer is Rome");
 				}
+				input.close();
 		}
 }

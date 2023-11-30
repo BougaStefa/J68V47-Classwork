@@ -11,8 +11,7 @@ public class L12E2 {
     public static ArrayList<Student> loadFile(String filename) {
         List<String> studentDetails;
         ArrayList<Student> thisClass = new ArrayList<>();
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(filename));
+        try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
             String line = in.readLine();
             while (line != null) {
                 studentDetails = Arrays.asList(line.split(","));

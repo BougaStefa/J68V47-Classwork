@@ -10,8 +10,6 @@ public class L8E1 {
             names[i] = input.nextLine();
         }
         System.out.printf("Out of %d students the first one is %s and the last one is %s",names.length,names[0],names[4]);
-
-
-
+        input.close();
     }
 }

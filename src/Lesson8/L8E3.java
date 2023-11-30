@@ -37,6 +37,7 @@ public class L8E3 {
             System.out.format("%d. %s %n", step, direction);
             step++;
         }
+        input.close();
     }
 
     public static String[] addValueToArray(String[] oldArray, String newString, int stepPosition) {

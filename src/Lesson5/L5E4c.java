@@ -13,6 +13,7 @@ public class L5E4c {
 						System.out.print("*" + pat + "*.");
 
 				}
+				input.close();
 		}
 }
 

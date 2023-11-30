@@ -46,5 +46,6 @@ public class ShapeAreaCalculator {
 						}
 						// Will keep running until you enter the correct values once
 				} while (!shape.equals("CIRCLE") && !shape.equals("SQUARE") && !shape.equals("TRIANGLE"));
+				input.close();
 		}
 }
