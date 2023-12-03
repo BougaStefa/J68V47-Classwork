@@ -20,8 +20,6 @@ public class MathSoup {
   private static final int MENU_ACTIVITY_MODERATE = 3;
   private static final int MENU_ACTIVITY_ACTIVE = 4;
   private static final int MENU_ACTIVITY_VERY_ACTIVE = 5;
-  private static final int MENU_EXIT = 4;
-  private static final int MENU_EXIT_BIG = 6;
   private static final int MENU_EXIT_SMALL = 3;
   private static final int MENU_YES = 1;
   private static final int MENU_NO = 2;
@@ -99,7 +97,7 @@ public class MathSoup {
   }
 
   //!If anything that is not in the specified range is detected then the user is asked to enter a valid username
-  public String getValidUsername(Scanner scanner) {
+  public static String getValidUsername(Scanner scanner) {
     while (true) {
       String username = scanner.nextLine();
       String acceptedChars = "[^a-zA-Z0-9]";
@@ -113,7 +111,7 @@ public class MathSoup {
   }
 
   //!Password length is validated in terms of length
-  public String getValidPassword(
+  public static String getValidPassword(
     Scanner scanner,
     int minLength,
     int maxLength
@@ -191,14 +189,9 @@ public class MathSoup {
   }
 
   public int displayAccountExist(Scanner scanner) {
-    System.out.printf("1.Yes%n2.No%n");
-    int choice = getValidNumber(scanner, 1, 2);
-    return switch (choice) {
-      case MENU_YES -> MENU_YES;
-      case MENU_NO -> MENU_NO;
-      //Impossible scenario
-      default -> throw new IllegalArgumentException("Invalid Choice " + choice);
-    };
+    System.out.println("Welcome to MathSoup, do you have an account with us?");
+    System.out.printf("1.Yes%n2.No%n3.Exit%n");
+    return getValidNumber(scanner, 1, 3);
   }
 
   //!Calorie Calculations
@@ -266,7 +259,6 @@ public class MathSoup {
     };
   }
 
-  //TODO: change the way account information is stored
   public void createAccount(Scanner scanner) {
     boolean accountCreated = false;
     System.out.println(
@@ -274,7 +266,7 @@ public class MathSoup {
     );
     while (!accountCreated) {
       String username = getValidUsername(scanner);
-      if (checkUsernameExists(username, "Accounts.txt")) {
+      if (checkUsernameExists(username, "src/Project/Accounts.txt")) {
         System.out.println(
           "An account with this username already exists.Try again."
         );
@@ -309,7 +301,7 @@ public class MathSoup {
           height,
           weight
         );
-        storeUser(newUser, "Accounts.txt");
+        storeUser(newUser, "src/Project/Accounts.txt");
         System.out.println(
           "Your account has been successfully initialized!" +
           "\n" +
@@ -377,7 +369,9 @@ public class MathSoup {
 
   public long newMaintenance(long averageCalories, double weightLoss) {
     // New maintenance is old maintenance - (7700*weight change per week)
-    return Math.round(averageCalories - ((7700 * weightLoss) / WEEKDAYS));
+    return Math.round(
+      averageCalories - ((CALORIES_PER_KG * weightLoss) / WEEKDAYS)
+    );
   }
 
   public long newGoalMath(long newMaintenance, long pace) {
@@ -391,7 +385,7 @@ public class MathSoup {
       System.out.printf("Please enter your calories for day %d%n", i + 1);
       dailyCalories = getValidNumber(scanner, 0, 10000);
       // if the value entered is less than 1200 a warning is printed, values as low as
-      // 1000 are accepted though
+      // 0 are accepted though
       if (dailyCalories < 1200) {
         System.out.println(
           "Warning: You are eating less than 1200 calories a day." +
@@ -416,29 +410,39 @@ public class MathSoup {
     return weightDay7 - weightDay1;
   }
 
-  public void recalibrationSequence(Scanner scanner) {
-    // Switch statement for all possible scenarios
-    // If the user's weight loss aligns with their goal and pace then a message
-    // congratulating them and telling them
-    // to keep up the good work is printed
-    // if not then their new maintenance calories are calculated and printed
-    // if the user has lost more than 1kg per week then a warning is printed
+  public void welcomeBack(User user) {
+    System.out.println("Welcome back " + user.Username + "!");
+    System.out.println(
+      "Hope your goal to " + user.Goal + " weight is going well!"
+    );
+    System.out.println(
+      "Your recommendation for last week was to consume " +
+      user.Calories +
+      " calories per day."
+    );
+  }
+
+  //TODO: Split up scenarios into different methods. Look up Maps and how to use them
+  public void recalibrationSequence(Scanner scanner, User user) {
+    welcomeBack(user);
     long averageCalories = averageCalories(scanner);
     double weighChange = weightChange(scanner);
+    long paceMultiplier;
+    if (user.Pace.equals("Slowly")) {
+      paceMultiplier = CALORIES_PER_QUARTER_KG;
+    } else if (user.Pace.equals("Normal")) {
+      paceMultiplier = CALORIES_PER_HALF_KG;
+    } else {
+      paceMultiplier = CALORIES_PER_KG;
+    }
     long newGoal = newGoalMath(
       newMaintenance(averageCalories, weighChange),
-      userPaceNumber
+      paceMultiplier
     );
-    System.out.println("Debug: User Pace Number is " + userPaceNumber);
-    System.out.println(
-      "Debug: new maintenance is " +
-      newMaintenance(averageCalories, weighChange)
-    );
-    System.out.println("Debug: Average calories is " + averageCalories);
-    System.out.println("Debug: Weight change is " + weighChange);
-    switch (userGoal) {
+    System.out.println("Debug: " + user.Goal);
+    switch (user.Goal) {
       case "Lose" -> {
-        switch (userPace) {
+        switch (user.Pace) {
           case "Slowly" -> {
             if (weighChange <= 0 && weighChange > -0.05) {
               System.out.println(
@@ -597,7 +601,7 @@ public class MathSoup {
         }
       }
       case "Gain" -> {
-        switch (userPace) {
+        switch (user.Pace) {
           case "Slowly" -> {
             if (weighChange >= 0 && weighChange < 0.1) {
               System.out.println(
@@ -759,20 +763,21 @@ public class MathSoup {
     return null;
   }
 
-  public boolean login(Scanner scanner) {
+  public static User login(Scanner scanner) {
     System.out.println("Please enter your username");
-    String username = getValidUsername(scanner);
+    scanner.nextLine();
     while (true) {
-      if (!checkUsernameExists(username, "Accounts.txt")) {
+      String username = getValidUsername(scanner);
+      if (!checkUsernameExists(username, "src/Project/Accounts.txt")) {
         System.out.println("This username does not exist,please try again");
       } else {
-        User user = getUser(username, "Accounts.txt");
-        if (user != null) {
-          System.out.println("Please enter your password");
-          String password = getValidPassword(scanner, 9, 20);
-          if (password.equals(user.Password)) {
+        System.out.println("Please enter your password");
+        while (true) {
+          String password = scanner.nextLine();
+          User user = getUser(username, "src/Project/Accounts.txt");
+          if (user != null && password.equals(user.Password)) {
             System.out.println("Login successful!");
-            return true;
+            return user;
           } else {
             System.out.println("Incorrect password,please try again");
           }
@@ -782,19 +787,18 @@ public class MathSoup {
   }
 
   public void runMathSoup(Scanner scanner) {
-    System.out.println("Welcome to MathSoup, do you have an account with us?");
-    int choice = displayAccountExist(scanner);
-    scanner.nextLine();
-    switch (choice) {
+    switch (displayAccountExist(scanner)) {
       case MENU_YES -> {
         while (true) {
-          if (login(scanner)) {
-            recalibrationSequence(scanner);
+          User user = login(scanner);
+          if (user != null) {
+            recalibrationSequence(scanner, user);
             break;
           }
         }
       }
       case MENU_NO -> {
+        scanner.nextLine();
         createAccount(scanner);
       }
       case MENU_EXIT_SMALL -> {
