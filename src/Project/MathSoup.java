@@ -1,109 +1,79 @@
 package Project;
 
+import static Project.Constants.*;
+
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 public class MathSoup {
 
-  //! Constants for the menu options
-  private static final int MENU_GOAL_LOSE = 1;
-  private static final int MENU_GOAL_MAINTAIN = 2;
-  private static final int MENU_GOAL_GAIN = 3;
-  private static final int MENU_PACE_SLOW = 1;
-  private static final int MENU_PACE_NORMAL = 2;
-  private static final int MENU_PACE_FAST = 3;
-  private static final int MENU_SEX_MALE = 1;
-  private static final int MENU_SEX_FEMALE = 2;
-  private static final int MENU_ACTIVITY_SEDENTARY = 1;
-  private static final int MENU_ACTIVITY_LIGHT = 2;
-  private static final int MENU_ACTIVITY_MODERATE = 3;
-  private static final int MENU_ACTIVITY_ACTIVE = 4;
-  private static final int MENU_ACTIVITY_VERY_ACTIVE = 5;
-  private static final int MENU_EXIT_SMALL = 3;
-  private static final int MENU_YES = 1;
-  private static final int MENU_NO = 2;
-  private static final int WEEKDAYS = 7;
-  private static final int WEIGHT_MULTIPLIER = 10;
-  private static final double HEIGHT_MULTIPLIER = 6.25;
-  private static final int AGE_MULTIPLIER = 5;
-  private static final int MALE_ADDITION = 5;
-  private static final int FEMALE_SUBTRACTION = 161;
-  private static final double ACTIVITY_SEDENTARY_MULTIPLIER = 1.2;
-  private static final double ACTIVITY_LIGHT_MULTIPLIER = 1.375;
-  private static final double ACTIVITY_MODERATE_MULTIPLIER = 1.55;
-  private static final double ACTIVITY_ACTIVE_MULTIPLIER = 1.725;
-  private static final double ACTIVITY_VERY_ACTIVE_MULTIPLIER = 1.9;
-  private static final int CALORIES_PER_KG = 7700;
-  private static final int CALORIES_PER_HALF_KG = 3850;
-  private static final int CALORIES_PER_QUARTER_KG = 1925;
-
-  //!Used to store values from the file
+  //! Constants
 
   //!Input validation methods
   //?Methods getValidNumber and getValidDouble could be combined into one method
-  //TODO: Combine getValidNumber and getValidDouble into one method
-  public static int getValidNumber(Scanner scanner, int min, int max) {
-    int number;
+  public int getValidNumber(Scanner scanner, int min, int max) {
     while (true) {
       try {
-        number = scanner.nextInt();
+        int number = scanner.nextInt();
         if (number >= min && number <= max) {
           return number;
         } else {
-          System.out.println("Invalid number. Please try again.");
+          System.out.println(INVALID_NUMBER_PROMPT + min + "-" + max);
         }
       } catch (java.util.InputMismatchException e) {
-        System.out.println("Please enter a valid number");
+        System.out.println(INVALID_NUMERICAL_INPUT);
         scanner.nextLine(); // clear input
       }
     }
   }
 
-  public static double getValidDouble(Scanner scanner, double min, double max) {
-    double number;
+  public double getValidDouble(Scanner scanner, double min, double max) {
     while (true) {
       try {
-        number = scanner.nextDouble();
+        double number = scanner.nextDouble();
         if (number >= min && number <= max) {
           return number;
         } else {
-          System.out.println("Invalid number. Please try again.");
+          System.out.println(INVALID_NUMBER_PROMPT + min + "-" + max);
         }
       } catch (java.util.InputMismatchException e) {
-        System.out.println("Please enter a valid number");
+        System.out.println(INVALID_NUMERICAL_INPUT);
         scanner.nextLine(); // clear input
       }
     }
   }
 
-  //!Asks for the user's weight, height and age and validates them using the getValidNumber method
-  //!Most limits are set based on extreme human cases
-  public static int getValidWeight(Scanner scanner) {
-    System.out.println("Please enter your current weight in Kilograms");
-    return getValidNumber(scanner, 30, 500);
+  //Limits based on extreme existing cases
+  public int getValidWeight(Scanner scanner) {
+    System.out.println(REQUEST_USER_WEIGHT);
+    return getValidNumber(scanner, MIN_WEIGHT, MAX_WEIGHT);
   }
 
-  public static int getValidHeight(Scanner scanner) {
-    System.out.println("Please enter your current height in Centimeters");
-    return getValidNumber(scanner, 55, 251);
+  public int getValidHeight(Scanner scanner) {
+    System.out.println(REQUEST_USER_HEIGHT);
+    return getValidNumber(scanner, MIN_HEIGHT, MAX_HEIGHT);
   }
 
-  public static int getValidAge(Scanner scanner) {
-    System.out.println(
-      "Please enter your current age(ONLY USERS OVER 18 ALLOWED)"
-    );
-    return getValidNumber(scanner, 18, 116);
+  public int getValidAge(Scanner scanner) {
+    System.out.println(REQUEST_USER_AGE);
+    return getValidNumber(scanner, MIN_AGE, MAX_AGE);
   }
 
   //!If anything that is not in the specified range is detected then the user is asked to enter a valid username
-  public static String getValidUsername(Scanner scanner) {
+  public String getValidUsername(Scanner scanner) {
+    String acceptedChars = ACCEPTED_RANGE_USERNAME;
+    Pattern pattern = Pattern.compile(acceptedChars);
     while (true) {
       String username = scanner.nextLine();
-      String acceptedChars = "[^a-zA-Z0-9]";
-      Pattern pattern = Pattern.compile(acceptedChars);
       if (pattern.matcher(username).find()) {
-        System.out.println("Please enter a valid username");
+        System.out.println(INVALID_USERNAME_PROMPT);
       } else {
         return username;
       }
@@ -111,7 +81,7 @@ public class MathSoup {
   }
 
   //!Password length is validated in terms of length
-  public static String getValidPassword(
+  public String getValidPassword(
     Scanner scanner,
     int minLength,
     int maxLength
@@ -121,11 +91,7 @@ public class MathSoup {
       if (password.length() >= minLength && password.length() <= maxLength) {
         return password;
       } else {
-        System.out.printf(
-          "Please make sure your password has at least %d characters and at most %d%n",
-          minLength,
-          maxLength
-        );
+        System.out.printf(PASSWORD_LENGTH_PROMPT);
       }
     }
   }
@@ -133,65 +99,59 @@ public class MathSoup {
   //!Menu Methods
   //TODO: REMOVE SWITCH CASES AND SIMPIFY TO JUST A PRINTOUT AND A GETVALIDNUMBER RETURNED. MIGHT ALSO NEED TO REMOVE CONSTANTS
   public String displayGoalMenu(Scanner scanner) {
-    System.out.printf(
-      "What do you wish to do:%n1.Lose Weight%n2.Maintain Weight%n3.Gain Weight%n"
-    );
-    int choice = getValidNumber(scanner, 1, 4);
-    return switch (choice) {
-      case MENU_GOAL_LOSE -> "Lose";
-      case MENU_GOAL_MAINTAIN -> "Maintain";
-      case MENU_GOAL_GAIN -> "Gain";
+    System.out.println(DISPLAY_GOAL_MENU);
+    return switch (getValidNumber(scanner, MENU_GOAL_LOSE, MENU_GOAL_GAIN)) {
+      case MENU_GOAL_LOSE -> GOAL_LOSE;
+      case MENU_GOAL_MAINTAIN -> GOAL_MAINTAIN;
+      case MENU_GOAL_GAIN -> GOAL_GAIN;
       //Impossible scenario
-      default -> throw new IllegalArgumentException("Invalid Choice " + choice);
+      default -> throw new IllegalArgumentException(INVALID_MENU_CHOICE);
     };
   }
 
   public String displayPaceMenu(Scanner scanner) {
-    System.out.printf(
-      "Pick your own pace:%n1.Slowly(0.25kg per week)%n2.Normal(0.5kg per week)%n" +
-      "3.Fast(1kg per week)%n"
-    );
-    int choice = getValidNumber(scanner, 1, 3);
-    return switch (choice) {
-      case MENU_PACE_SLOW -> "Slowly";
-      case MENU_PACE_NORMAL -> "Normal";
-      case MENU_PACE_FAST -> "Fast";
+    System.out.println(DISPLAY_PACE_MENU);
+    return switch (getValidNumber(scanner, MENU_PACE_SLOW, MENU_PACE_FAST)) {
+      case MENU_PACE_SLOW -> PACE_SLOWLY;
+      case MENU_PACE_NORMAL -> PACE_NORMAL;
+      case MENU_PACE_FAST -> PACE_FAST;
       //Impossible scenario
-      default -> throw new IllegalArgumentException("Invalid Choice " + choice);
+      default -> throw new IllegalArgumentException(DISPLAY_PACE_MENU);
     };
   }
 
   public String displaySexMenu(Scanner scanner) {
-    System.out.printf("What is your birth sex?%n1.Male%n2.Female%n");
-    return switch (getValidNumber(scanner, 1, 2)) {
-      case MENU_SEX_MALE -> "Male";
-      case MENU_SEX_FEMALE -> "Female";
+    System.out.println(DISPLAY_SEX_MENU);
+    return switch (getValidNumber(scanner, MENU_SEX_MALE, MENU_SEX_FEMALE)) {
+      case MENU_SEX_MALE -> USER_SEX_MALE;
+      case MENU_SEX_FEMALE -> USER_SEX_FEMALE;
       //Impossible scenario
-      default -> throw new IllegalArgumentException("Invalid Choice");
+      default -> throw new IllegalArgumentException(INVALID_MENU_CHOICE);
     };
   }
 
   public String displayActivityMenu(Scanner scanner) {
-    System.out.printf(
-      "What is your current activity level?%n1.Sedentary%n2.Lightly Active%n" +
-      "3.Moderately Active%n4.Active%n5.Very Active%n"
-    );
-    int choice = getValidNumber(scanner, 1, 5);
-    return switch (choice) {
-      case MENU_ACTIVITY_SEDENTARY -> "Sedentary";
-      case MENU_ACTIVITY_LIGHT -> "LightlyActive";
-      case MENU_ACTIVITY_MODERATE -> "Moderate";
-      case MENU_ACTIVITY_ACTIVE -> "Active";
-      case MENU_ACTIVITY_VERY_ACTIVE -> "VeryActive";
+    System.out.println(DISPLAY_ACTIVITY_MENU);
+    return switch (
+      getValidNumber(
+        scanner,
+        MENU_ACTIVITY_SEDENTARY,
+        MENU_ACTIVITY_VERY_ACTIVE
+      )
+    ) {
+      case MENU_ACTIVITY_SEDENTARY -> USER_ACTIVITY_SEDENTARY;
+      case MENU_ACTIVITY_LIGHT -> USER_ACTIVITY_LIGHT;
+      case MENU_ACTIVITY_MODERATE -> USER_ACTIVITY_MODERATE;
+      case MENU_ACTIVITY_ACTIVE -> USER_ACTIVITY_ACTIVE;
+      case MENU_ACTIVITY_VERY_ACTIVE -> USER_ACTIVITY_VERY_ACTIVE;
       //Impossible scenario
-      default -> throw new IllegalArgumentException("Invalid Choice " + choice);
+      default -> throw new IllegalArgumentException(INVALID_MENU_CHOICE);
     };
   }
 
   public int displayAccountExist(Scanner scanner) {
-    System.out.println("Welcome to MathSoup, do you have an account with us?");
-    System.out.printf("1.Yes%n2.No%n3.Exit%n");
-    return getValidNumber(scanner, 1, 3);
+    System.out.println(DISPLAY_WELCOME_QUESTION);
+    return getValidNumber(scanner, MENU_YES, MENU_NO);
   }
 
   //!Calorie Calculations
@@ -202,125 +162,126 @@ public class MathSoup {
     int age,
     String activity
   ) {
-    double caloricMaintenance;
-    double activityMultiplier =
-      switch (activity) {
-        case ("Sedentary") -> ACTIVITY_SEDENTARY_MULTIPLIER;
-        case ("LightlyActive") -> ACTIVITY_LIGHT_MULTIPLIER;
-        case ("Moderate") -> ACTIVITY_MODERATE_MULTIPLIER;
-        case ("Active") -> ACTIVITY_ACTIVE_MULTIPLIER;
-        case ("VeryActive") -> ACTIVITY_VERY_ACTIVE_MULTIPLIER;
-        //Impossible scenario
-        default -> throw new IllegalStateException(
-          "Unexpected value: " + activity
-        );
-      };
-    if (sex.equals("Male")) {
-      caloricMaintenance =
-        Math.round(
-          (
-            (WEIGHT_MULTIPLIER * weight) +
-            (HEIGHT_MULTIPLIER * height) -
-            (AGE_MULTIPLIER * age) +
-            MALE_ADDITION
-          ) *
-          activityMultiplier
-        );
-    } else {
-      caloricMaintenance =
-        Math.round(
-          (
-            (WEIGHT_MULTIPLIER * weight) +
-            (HEIGHT_MULTIPLIER * height) -
-            (AGE_MULTIPLIER * age) -
-            FEMALE_SUBTRACTION
-          ) *
-          activityMultiplier
-        );
-    }
+    double activityMultiplier = getActivityMultiplier(activity);
+    double caloricMaintenance = calculateCaloricMaintenance(
+      sex,
+      weight,
+      height,
+      age,
+      activityMultiplier
+    );
     return Math.round(caloricMaintenance);
   }
 
+  public double calculateCaloricMaintenance(
+    String sex,
+    int weight,
+    int height,
+    int age,
+    double activityMultiplier
+  ) {
+    double baseCaloricMaintenance =
+      (WEIGHT_MULTIPLIER * weight) +
+      (HEIGHT_MULTIPLIER * height) -
+      (AGE_MULTIPLIER * age);
+    if (sex.equals(USER_SEX_MALE)) {
+      return (baseCaloricMaintenance + MALE_ADDITION) * activityMultiplier;
+    } else {
+      return (baseCaloricMaintenance - FEMALE_SUBTRACTION) * activityMultiplier;
+    }
+  }
+
+  public double getActivityMultiplier(String activity) {
+    return switch (activity) {
+      case (USER_ACTIVITY_SEDENTARY) -> ACTIVITY_SEDENTARY_MULTIPLIER;
+      case (USER_ACTIVITY_LIGHT) -> ACTIVITY_LIGHT_MULTIPLIER;
+      case (USER_ACTIVITY_MODERATE) -> ACTIVITY_MODERATE_MULTIPLIER;
+      case (USER_ACTIVITY_ACTIVE) -> ACTIVITY_ACTIVE_MULTIPLIER;
+      case (USER_ACTIVITY_VERY_ACTIVE) -> ACTIVITY_VERY_ACTIVE_MULTIPLIER;
+      default -> throw new IllegalStateException(
+        UNEXPECTED_VALUE_ERROR + activity
+      );
+    };
+  }
+
   public long caloriesBasedOnGoal(String goal, String pace, long maintenance) {
-    int paceMultiplier =
-      switch (pace) {
-        case ("Slowly") -> CALORIES_PER_QUARTER_KG;
-        case ("Normal") -> CALORIES_PER_HALF_KG;
-        case ("Fast") -> CALORIES_PER_KG;
-        //Impossible scenario
-        default -> throw new IllegalStateException("Unexpected value: " + pace);
-      };
+    return calculateCalories(goal, maintenance, getPaceMultiplier(pace));
+  }
+
+  public int getPaceMultiplier(String pace) {
+    return switch (pace) {
+      case (PACE_SLOWLY) -> CALORIES_PER_QUARTER_KG;
+      case (PACE_NORMAL) -> CALORIES_PER_HALF_KG;
+      case (PACE_FAST) -> CALORIES_PER_KG;
+      default -> throw new IllegalStateException(UNEXPECTED_VALUE_ERROR + pace);
+    };
+  }
+
+  public long calculateCalories(
+    String goal,
+    long maintenance,
+    int paceMultiplier
+  ) {
     return switch (goal) {
-      case "Lose" -> maintenance - paceMultiplier / WEEKDAYS;
-      case "Maintain" -> maintenance;
-      case "Gain" -> maintenance + paceMultiplier / WEEKDAYS;
-      //Impossible scenario
-      default -> throw new IllegalArgumentException("Invalid Choice " + goal);
+      case GOAL_LOSE -> maintenance - paceMultiplier / WEEKDAYS;
+      case GOAL_MAINTAIN -> maintenance;
+      case GOAL_GAIN -> maintenance + paceMultiplier / WEEKDAYS;
+      default -> throw new IllegalArgumentException(INVALID_MENU_CHOICE);
     };
   }
 
   public void createAccount(Scanner scanner) {
     boolean accountCreated = false;
-    System.out.println(
-      "Please enter your username(No special characters allowed): "
-    );
+    System.out.println(USERNAME_PROMPT);
     while (!accountCreated) {
       String username = getValidUsername(scanner);
-      if (checkUsernameExists(username, "src/Project/Accounts.txt")) {
-        System.out.println(
-          "An account with this username already exists.Try again."
-        );
+      if (checkUsernameExists(username, ACCOUNTS_FILE_PATH)) {
+        System.out.println(USERNAME_EXISTS_MSG);
       } else {
         accountCreated = true;
-        System.out.println("Please enter a password(9-20 characters long)");
-        String password = getValidPassword(scanner, 9, 20);
-        String sex = displaySexMenu(scanner);
-        int weight = getValidWeight(scanner);
-        int height = getValidHeight(scanner);
-        int age = getValidAge(scanner);
-        String goal = displayGoalMenu(scanner);
-        String pace = displayPaceMenu(scanner);
-        String activity = displayActivityMenu(scanner);
-        long maintenance = caloricMaintenance(
-          sex,
-          weight,
-          height,
-          age,
-          activity
-        );
-        long calories = caloriesBasedOnGoal(goal, pace, maintenance);
-        User newUser = new User(
-          username,
-          password,
-          goal,
-          maintenance,
-          calories,
-          pace,
-          activity,
-          age,
-          height,
-          weight
-        );
-        storeUser(newUser, "src/Project/Accounts.txt");
-        System.out.println(
-          "Your account has been successfully initialized!" +
-          "\n" +
-          "Your maintenance calories have been estimated to: " +
-          maintenance
-        );
-        if (!goal.equals("Maintain")) {
-          System.out.println(
-            "Your target calories,based on your goal have been estimated to: " +
-            calories
-          );
-        }
-        System.out.println(
-          "Please adhere to your target for the next 7 days and then come back." +
-          "\n" +
-          "Make sure to note your daily calories and weight for every day."
-        );
+        User newUser = createUser(scanner, username);
+        storeUser(newUser, ACCOUNTS_FILE_PATH);
+        displayAccountCreatedMessage(newUser);
       }
     }
+  }
+
+  public User createUser(Scanner scanner, String username) {
+    System.out.println(PASSWORD_PROMPT);
+    String password = getValidPassword(
+      scanner,
+      PASSWORD_MIN_LENGTH,
+      PASSWORD_MAX_LENGTH
+    );
+    String sex = displaySexMenu(scanner);
+    int weight = getValidWeight(scanner);
+    int height = getValidHeight(scanner);
+    int age = getValidAge(scanner);
+    String goal = displayGoalMenu(scanner);
+    String pace = displayPaceMenu(scanner);
+    String activity = displayActivityMenu(scanner);
+    long maintenance = caloricMaintenance(sex, weight, height, age, activity);
+    long calories = caloriesBasedOnGoal(goal, pace, maintenance);
+    return new User(
+      username,
+      password,
+      goal,
+      maintenance,
+      calories,
+      pace,
+      activity,
+      age,
+      height,
+      weight
+    );
+  }
+
+  public void displayAccountCreatedMessage(User user) {
+    System.out.println(ACCOUNT_CREATED_MSG + user.Maintenance);
+    if (!user.Goal.equals(GOAL_MAINTAIN)) {
+      System.out.println(TARGET_CALORIES_MSG + user.Calories);
+    }
+    System.out.println(ADHERENCE_MSG);
   }
 
   public static void storeUser(User user, String filename) {
@@ -347,7 +308,7 @@ public class MathSoup {
         user.Weight
       );
     } catch (IOException e) {
-      System.out.println("Error storing to file" + e.getMessage());
+      System.out.println(STORING_TO_FILE_ERROR + e.getMessage());
     }
   }
 
@@ -362,7 +323,7 @@ public class MathSoup {
         line = in.readLine();
       }
     } catch (IOException e) {
-      System.out.println("Error reading file: " + e.getMessage());
+      System.out.println(READING_FROM_FILE_ERROR + e.getMessage());
     }
     return false;
   }
@@ -382,20 +343,15 @@ public class MathSoup {
     long totalCalories = 0;
     long dailyCalories = 0;
     for (int i = 0; i < WEEKDAYS; i++) {
-      System.out.printf("Please enter your calories for day %d%n", i + 1);
-      dailyCalories = getValidNumber(scanner, 0, 10000);
+      System.out.println(REQUEST_USER_CALORIES_DAY + (i + 1));
+      dailyCalories =
+        getValidNumber(scanner, MIN_ACCEPTED_CALORIES, MAX_ACCEPTED_CALORIES);
       // if the value entered is less than 1200 a warning is printed, values as low as
       // 0 are accepted though
-      if (dailyCalories < 1200) {
-        System.out.println(
-          "Warning: You are eating less than 1200 calories a day." +
-          " This is not recommended."
-        );
-      } else if (dailyCalories > 5000) {
-        System.out.println(
-          "Warning: You are eating more than 5000 calories a day." +
-          " This is not recommended."
-        );
+      if (dailyCalories < MIN_RECOMMENDED_CALORIES) {
+        System.out.println(LOW_END_CALOERIE_WARNING);
+      } else if (dailyCalories > MAX_RECOMMENDED_CALORIES) {
+        System.out.println(HIGH_END_CALOERIE_WARNING);
       }
       totalCalories += dailyCalories;
     }
@@ -403,23 +359,17 @@ public class MathSoup {
   }
 
   public double weightChange(Scanner scanner) {
-    System.out.println("Please enter your weight for day 1");
-    double weightDay1 = getValidDouble(scanner, 30, 500);
-    System.out.println("Please enter your weight for day 7");
-    double weightDay7 = getValidDouble(scanner, 30, 500);
+    System.out.println(REQUEST_USER_WEIGHT_DAY_ONE);
+    double weightDay1 = getValidDouble(scanner, MIN_WEIGHT, MAX_WEIGHT);
+    System.out.println(REQUEST_USER_WEIGHT_DAY_SEVEN);
+    double weightDay7 = getValidDouble(scanner, MIN_WEIGHT, MAX_WEIGHT);
     return weightDay7 - weightDay1;
   }
 
   public void welcomeBack(User user) {
-    System.out.println("Welcome back " + user.Username + "!");
-    System.out.println(
-      "Hope your goal to " + user.Goal + " weight is going well!"
-    );
-    System.out.println(
-      "Your recommendation for last week was to consume " +
-      user.Calories +
-      " calories per day."
-    );
+    System.out.println(WELCOME_BACK_MSG + user.Username);
+    System.out.println(WELCOME_BACK_MSG2 + user.Goal + WELCOME_BACK_MSG3);
+    System.out.println(WELCOME_BACK_MSG4 + user.Calories);
   }
 
   //TODO: Split up scenarios into different methods. Look up Maps and how to use them
@@ -428,9 +378,9 @@ public class MathSoup {
     long averageCalories = averageCalories(scanner);
     double weighChange = weightChange(scanner);
     long paceMultiplier;
-    if (user.Pace.equals("Slowly")) {
+    if (user.Pace.equals(PACE_SLOWLY)) {
       paceMultiplier = CALORIES_PER_QUARTER_KG;
-    } else if (user.Pace.equals("Normal")) {
+    } else if (user.Pace.equals(PACE_NORMAL)) {
       paceMultiplier = CALORIES_PER_HALF_KG;
     } else {
       paceMultiplier = CALORIES_PER_KG;
@@ -439,300 +389,111 @@ public class MathSoup {
       newMaintenance(averageCalories, weighChange),
       paceMultiplier
     );
-    System.out.println("Debug: " + user.Goal);
+    handleGoal(user, weighChange, newGoal);
+  }
+
+  public void handleGoal(User user, double weighChange, long newGoal) {
+    TreeMap<Double, String> messages = new TreeMap<>();
     switch (user.Goal) {
-      case "Lose" -> {
+      case GOAL_LOSE:
         switch (user.Pace) {
-          case "Slowly" -> {
-            if (weighChange <= 0 && weighChange > -0.05) {
-              System.out.println(
-                "Looks like you've  barely lost any weight,lets recalibrate!"
-              );
-              System.out.println("Your calorie recommendation is: " + newGoal);
-            } else if (weighChange <= -0.1 && weighChange > -0.5) {
-              System.out.println(
-                "Congratulations! You are on track to lose 0.25kg per week." +
-                " Keep up the good work!"
-              );
-              System.out.println(
-                "Here's a new calorie recommendation if you want to further tailor " +
-                "your progress to how you've responded so far and more in line with your pace: " +
-                newGoal
-              );
-            } else if (weighChange <= -0.5 && weighChange > -1) {
-              System.out.println(
-                "You are losing weight at a faster pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange <= -1 && weighChange > -2) {
-              System.out.println(
-                "You are losing weight at a much faster pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange <= -2) {
-              System.out.println(
-                "Warning: You are losing weight too fast. Please try to eat more." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange > 0) {
-              System.out.println(
-                "Oh no,looks like you've gained weight, lets recalibrate!"
-              );
-              System.out.println(
-                "We recommend you tailor your intake to " + newGoal
-              );
-            }
+          case PACE_SLOWLY -> {
+            messages.put(0.0, GOAL_FAILED_LOSE);
+            messages.put(-0.05, GOAL_BARELY_LOST);
+            messages.put(-0.1, GOAL_CONGRATS_QUARTER);
+            messages.put(-0.5, GOAL_FAST_LOSE);
+            messages.put(-1.0, GOAL_TOO_FAST_LOSE);
+            messages.put(-2.0, GOAL_WARNING_LOSE);
+            messages.put(Double.NEGATIVE_INFINITY, GOAL_FAILED_LOSE);
+            break;
           }
-          case "Normal" -> {
-            if (weighChange <= 0 && weighChange > -0.05) {
-              System.out.println(
-                "Looks like you've barely lost any weight,lets recalibrate!"
-              );
-              System.out.println("Your calorie recommendation is: " + newGoal);
-            } else if (weighChange <= -0.1 && weighChange > -0.5) {
-              System.out.println(
-                "You are losing weight at a slower pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange <= -0.5 && weighChange > -0.99) {
-              System.out.println(
-                "Congratulations! You are on track to lose 0.5kg per week." +
-                " Keep up the good work!"
-              );
-              System.out.println(
-                "Here's a new calorie recommendation if you want to further tailor " +
-                "your progress to how you've responded so far and more in line with your pace: " +
-                newGoal
-              );
-            } else if (weighChange <= -1 && weighChange > -2) {
-              System.out.println(
-                "You are losing weight at a faster pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange <= -2) {
-              System.out.println(
-                "Warning: You are losing weight too fast. Please try to eat more." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange > 0) {
-              System.out.println(
-                "Oh no,looks like you've gained weight, lets recalibrate!"
-              );
-              System.out.println(
-                "We recommend you tailor your intake to " + newGoal
-              );
-            }
+          case PACE_NORMAL -> {
+            messages.put(0.0, GOAL_FAILED_LOSE);
+            messages.put(-0.05, GOAL_BARELY_LOST);
+            messages.put(-0.1, GOAL_SLOW_LOSE);
+            messages.put(-0.5, GOAL_CONGRATS_HALF);
+            messages.put(-1.0, GOAL_FAST_LOSE);
+            messages.put(-2.0, GOAL_WARNING_LOSE);
+            messages.put(Double.NEGATIVE_INFINITY, GOAL_FAILED_LOSE);
+            break;
           }
-          case "Fast" -> {
-            if (weighChange <= 0 && weighChange > -0.05) {
-              System.out.println(
-                "Looks like you've barely lost any weight,lets recalibrate!"
-              );
-              System.out.println("Your calorie recommendation is: " + newGoal);
-            } else if (weighChange <= -0.1 && weighChange > -0.5) {
-              System.out.println(
-                "You are losing weight at a much slower pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange <= -0.5 && weighChange > -1) {
-              System.out.println(
-                "You are losing weight at a slower pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange <= -1 && weighChange > -2) {
-              System.out.println(
-                "Congratulations! You are on track to lose 1kg per week." +
-                " Keep up the good work!"
-              );
-              System.out.println(
-                "Here's a new calorie recommendation if you want to further tailor " +
-                "your progress to how you've responded so far and more in line with your pace: " +
-                newGoal
-              );
-            } else if (weighChange <= -2) {
-              System.out.println(
-                "Warning: You are losing weight too fast. Please try to eat more." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange > 0) {
-              System.out.println(
-                "Oh no,looks like you've gained weight, lets recalibrate!"
-              );
-              System.out.println(
-                "We recommend you tailor your intake to " + newGoal
-              );
-            }
+          case PACE_FAST -> {
+            messages.put(0.0, GOAL_FAILED_LOSE);
+            messages.put(-0.05, GOAL_BARELY_LOST);
+            messages.put(-0.1, GOAL_TOO_SLOW_LOSE);
+            messages.put(-0.5, GOAL_SLOW_LOSE);
+            messages.put(-1.0, GOAL_CONGRATS_KILO);
+            messages.put(-2.0, GOAL_WARNING_LOSE);
+            messages.put(Double.NEGATIVE_INFINITY, GOAL_FAILED_LOSE);
+            break;
           }
         }
-      }
-      case "Maintain" -> {
-        if (weighChange >= -0.05 && weighChange <= 0) {
-          System.out.println(
-            "Looks like you are on track with your goal, keep up the good work!"
-          );
-          System.out.println(
-            "Here's a new calorie recommendation if you want to further tailor " +
-            "your progress to how you've responded so far and more in line with your pace: " +
-            newGoal
-          );
-        } else if (weighChange > 0) {
-          System.out.println(
-            "Looks like you've gained weight, lets recalibrate!"
-          );
-          System.out.println(
-            "We recommend you tailor your intake to " + newGoal
-          );
+        break;
+      case GOAL_MAINTAIN:
+        messages.put(-0.05, MAINTAIN_LOSE);
+        messages.put(0.05, MAINTAIN_CONGRATS);
+        messages.put(Double.POSITIVE_INFINITY, GOAL_FAILED_LOSE);
+        break;
+      case GOAL_GAIN:
+        switch (user.Pace) {
+          case PACE_SLOWLY:
+            messages.put(0.1, GOAL_BARELY_GAIN);
+            messages.put(0.5, GOAL_CONGRATS_QUARTER_GAIN);
+            messages.put(1.0, GOAL_FAST_GAIN);
+            messages.put(2.0, GOAL_TOO_FAST_GAIN);
+            messages.put(Double.POSITIVE_INFINITY, GOAL_WARNING_GAIN);
+            messages.put(0.0, GOAL_FAILED_GAIN);
+            break;
+          case PACE_NORMAL:
+            messages.put(0.1, GOAL_BARELY_GAIN);
+            messages.put(0.5, GOAL_SLOW_GAIN);
+            messages.put(1.0, GOAL_CONGRATS_HALF_GAIN);
+            messages.put(2.0, GOAL_FAST_GAIN);
+            messages.put(Double.POSITIVE_INFINITY, GOAL_WARNING_GAIN);
+            messages.put(0.0, GOAL_FAILED_GAIN);
+            break;
+          case PACE_FAST:
+            messages.put(0.1, GOAL_BARELY_GAIN);
+            messages.put(0.5, GOAL_TOO_SLOW_GAIN);
+            messages.put(1.0, GOAL_SLOW_GAIN);
+            messages.put(2.0, GOAL_CONGRATS_KILO_GAIN);
+            messages.put(Double.POSITIVE_INFINITY, GOAL_WARNING_GAIN);
+            messages.put(0.0, GOAL_FAILED_GAIN);
+            break;
+        }
+        break;
+    }
+
+    Map.Entry<Double, String> entry = messages.floorEntry(weighChange);
+    if (entry != null) {
+      System.out.println(entry.getValue());
+      System.out.println(RECOMMEND_NEW_CALORIES + newGoal);
+      updateCalories(user.Username, newGoal, ACCOUNTS_FILE_PATH);
+    }
+  }
+
+  public static void updateCalories(
+    String username,
+    long newGoal,
+    String filename
+  ) {
+    try {
+      List<String> lines = Files.readAllLines(Paths.get(filename));
+      List<String> modifiedLines = new ArrayList<>();
+
+      for (String line : lines) {
+        if (line.startsWith(username)) {
+          String[] parts = line.split(","); // Assuming fields are comma-separated
+          parts[4] = String.valueOf(newGoal); // Assuming the "Calories" field is the third field
+          modifiedLines.add(String.join(",", parts));
         } else {
-          System.out.println(
-            "Looks like you've lost weight, lets recalibrate!"
-          );
-          System.out.println(
-            "We recommend you tailor your intake to " + newGoal
-          );
+          modifiedLines.add(line);
         }
       }
-      case "Gain" -> {
-        switch (user.Pace) {
-          case "Slowly" -> {
-            if (weighChange >= 0 && weighChange < 0.1) {
-              System.out.println(
-                "Looks like you've barely gained any weight,lets recalibrate!"
-              );
-              System.out.println("Your calorie recommendation is: " + newGoal);
-            } else if (weighChange >= 0.1 && weighChange < 0.5) {
-              System.out.println(
-                "Congratulations! You are on track to gain 0.25kg per week." +
-                " Keep up the good work!"
-              );
-              System.out.println(
-                "Here's a new calorie recommendation if you want to further tailor " +
-                "your progress to how you've responded so far and more in line with your pace: " +
-                newGoal
-              );
-            } else if (weighChange >= 0.5 && weighChange < 1) {
-              System.out.println(
-                "You are gaining weight at a faster pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange >= 1 && weighChange < 2) {
-              System.out.println(
-                "You are gaining weight at a much faster pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange >= 2) {
-              System.out.println(
-                "Warning: You are gaining weight too fast. Please try to eat less." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange < 0) {
-              System.out.println(
-                "Oh no,looks like you've lost weight, lets recalibrate!"
-              );
-              System.out.println(
-                "We recommend you tailor your intake to " + newGoal
-              );
-            }
-          }
-          case "Normal" -> {
-            if (weighChange >= 0 && weighChange < 0.1) {
-              System.out.println(
-                "Looks like you've barely gained any weight,lets recalibrate!"
-              );
-              System.out.println("Your calorie recommendation is: " + newGoal);
-            } else if (weighChange >= 0.1 && weighChange < 0.5) {
-              System.out.println(
-                "You are gaining weight at a slower pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange >= 0.5 && weighChange < 1) {
-              System.out.println(
-                "Congratulations! You are on track to gain 0.5kg per week." +
-                " Keep up the good work!"
-              );
-              System.out.println(
-                "Here's a new calorie recommendation if you want to further tailor " +
-                "your progress to how you've responded so far and more in line with your pace: " +
-                newGoal
-              );
-            } else if (weighChange >= 1 && weighChange < 2) {
-              System.out.println(
-                "You are gaining weight at a faster pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange >= 2) {
-              System.out.println(
-                "Warning: You are gaining weight too fast. Please try to eat less." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange < 0) {
-              System.out.println(
-                "Oh no,looks like you've lost weight, lets recalibrate!"
-              );
-              System.out.println(
-                "We recommend you tailor your intake to " + newGoal
-              );
-            }
-          }
-          case "Fast" -> {
-            if (weighChange >= 0 && weighChange < 0.1) {
-              System.out.println(
-                "Looks like you've barely gained any weight,lets recalibrate!"
-              );
-              System.out.println("Your calorie recommendation is: " + newGoal);
-            } else if (weighChange >= 0.1 && weighChange < 0.5) {
-              System.out.println(
-                "You are gaining weight at a much slower pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange >= 0.5 && weighChange < 1) {
-              System.out.println(
-                "You are gaining weight at a slower pace than expected." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange >= 1 && weighChange < 2) {
-              System.out.println(
-                "Congratulations! You are on track to gain 1kg per week." +
-                " Keep up the good work!"
-              );
-              System.out.println(
-                "Here's a new calorie recommendation if you want to further tailor " +
-                "your progress to how you've responded so far and more in line with your pace: " +
-                newGoal
-              );
-            } else if (weighChange >= 2) {
-              System.out.println(
-                "Warning: You are gaining weight too fast. Please try to eat less." +
-                " We recommend you tailor your intake to " +
-                newGoal
-              );
-            } else if (weighChange < 0) {
-              System.out.println(
-                "Oh no,looks like you've lost weight, lets recalibrate!"
-              );
-              System.out.println(
-                "We recommend you tailor your intake to " + newGoal
-              );
-            }
-          }
-        }
-      }
+
+      Files.write(Paths.get(filename), modifiedLines);
+    } catch (IOException e) {
+      System.out.println(READING_FROM_FILE_ERROR + e.getMessage());
     }
   }
 
@@ -758,28 +519,28 @@ public class MathSoup {
         line = in.readLine();
       }
     } catch (IOException e) {
-      System.out.println("Error reading file: " + e.getMessage());
+      System.out.println(READING_FROM_FILE_ERROR + e.getMessage());
     }
     return null;
   }
 
-  public static User login(Scanner scanner) {
-    System.out.println("Please enter your username");
+  public User login(Scanner scanner) {
+    System.out.println(REQUEST_USERNAME);
     scanner.nextLine();
     while (true) {
       String username = getValidUsername(scanner);
-      if (!checkUsernameExists(username, "src/Project/Accounts.txt")) {
-        System.out.println("This username does not exist,please try again");
+      if (!checkUsernameExists(username, ACCOUNTS_FILE_PATH)) {
+        System.out.println(USERNAME_NOT_FOUND);
       } else {
-        System.out.println("Please enter your password");
+        System.out.println(REQUEST_PASSWORD);
         while (true) {
           String password = scanner.nextLine();
-          User user = getUser(username, "src/Project/Accounts.txt");
+          User user = getUser(username, ACCOUNTS_FILE_PATH);
           if (user != null && password.equals(user.Password)) {
-            System.out.println("Login successful!");
+            System.out.println(LOGIN_SUCCESSFULL);
             return user;
           } else {
-            System.out.println("Incorrect password,please try again");
+            System.out.println(INCORRECT_PASSWORD);
           }
         }
       }
@@ -802,7 +563,7 @@ public class MathSoup {
         createAccount(scanner);
       }
       case MENU_EXIT_SMALL -> {
-        System.out.println("Goodbye!");
+        System.out.println(EXIT_PROGRAM_MSG);
         System.exit(0);
       }
     }
