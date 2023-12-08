@@ -80,7 +80,6 @@ public class MathSoup {
     }
   }
 
-  //!Password length is validated in terms of length
   public String getValidPassword(
     Scanner scanner,
     int minLength,
