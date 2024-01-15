@@ -27,7 +27,7 @@ public class MathSoup {
         } else {
           System.out.println(INVALID_NUMBER_PROMPT + min + "-" + max);
         }
-      } catch (java.util.InputMismatchException e) {
+      } catch (java.util.NoSuchElementException e) {
         System.out.println(INVALID_NUMERICAL_INPUT);
         scanner.nextLine(); // clear input
       }
@@ -90,7 +90,7 @@ public class MathSoup {
       if (password.length() >= minLength && password.length() <= maxLength) {
         return password;
       } else {
-        System.out.printf(PASSWORD_LENGTH_PROMPT);
+        System.out.println(PASSWORD_LENGTH_PROMPT);
       }
     }
   }

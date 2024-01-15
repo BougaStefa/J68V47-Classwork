@@ -40,7 +40,7 @@ public class Constants {
   public static final String GOAL_GAIN = "Gain";
   public static final String USERNAME_PROMPT =
     "Please enter your username(No special characters allowed): ";
-  public static final String ACCOUNTS_FILE_PATH = "src/Project/Accounts.txt";
+  public static final String ACCOUNTS_FILE_PATH = "Project/Accounts.txt";
   public static final String USERNAME_EXISTS_MSG =
     "An account with this username already exists.Try again.";
   public static final String PASSWORD_PROMPT = "Please enter your password";
@@ -57,7 +57,7 @@ public class Constants {
   public static final String PASSWORD_LENGTH_PROMPT =
     "Please make sure your password has at least " +
     PASSWORD_MIN_LENGTH +
-    "characters and at most " +
+    " characters and at most " +
     PASSWORD_MAX_LENGTH +
     " characters";
   public static final String INVALID_NUMBER_PROMPT =
