@@ -1,0 +1,24 @@
+Open terminal
+run java -version , ensure you're on the latest one
+navigate to desired destination(hint: cd filepath)
+run git clone https://github.com/BougaStefa/J68V47-Classwork.git
+run cd J68V47-Classwork , run code . (if on vscode, might be different on other IDEs)
+Navigate to src/Project/MathSoup.java and run
+Follow the menu prompts to create an account or login if you already have one
+For account creation : 
+1-Enter a username with no special charachters
+2-Enter a password between 9 and 20 characters login
+3-Choose your sex via the menu
+4-Enter your weight in kg 
+5-Enter your height in cm
+6-Enter your age
+7 Choose your goal via the menu
+8-Choose your pace via the menu
+9-Choose your activity level via the menu
+Follow the steps at the end of the account creation and come back in 1 week
+For login:
+1- Enter your username
+2- Enter your password
+3-Enter calories for days 1 - 7
+4- Enter weight for days 1 and 7
+5 - Follow the steps at the end of the process and come back in 1 week

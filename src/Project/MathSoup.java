@@ -27,7 +27,7 @@ public class MathSoup {
         } else {
           System.out.println(INVALID_NUMBER_PROMPT + min + "-" + max);
         }
-      } catch (java.util.NoSuchElementException e) {
+      } catch (java.util.InputMismatchException e) {
         System.out.println(INVALID_NUMERICAL_INPUT);
         scanner.nextLine(); // clear input
       }
@@ -276,9 +276,9 @@ public class MathSoup {
   }
 
   public void displayAccountCreatedMessage(User user) {
-    System.out.println(ACCOUNT_CREATED_MSG + user.Maintenance);
-    if (!user.Goal.equals(GOAL_MAINTAIN)) {
-      System.out.println(TARGET_CALORIES_MSG + user.Calories);
+    System.out.println(ACCOUNT_CREATED_MSG + user.getMaintenance());
+    if (!user.getGoal().equals(GOAL_MAINTAIN)) {
+      System.out.println(TARGET_CALORIES_MSG + user.getCalories());
     }
     System.out.println(ADHERENCE_MSG);
   }
@@ -286,25 +286,25 @@ public class MathSoup {
   public static void storeUser(User user, String filename) {
     try (PrintWriter out = new PrintWriter(new FileWriter(filename, true))) {
       out.println(
-        user.Username +
+        user.getUsername() +
         "," +
-        user.Password +
+        user.getPassword() +
         "," +
-        user.Goal +
+        user.getGoal() +
         "," +
-        user.Maintenance +
+        user.getMaintenance() +
         "," +
-        user.Calories +
+        user.getCalories() +
         "," +
-        user.Pace +
+        user.getPace() +
         "," +
-        user.Activity +
+        user.getActivity() +
         "," +
-        user.Age +
+        user.getAge() +
         "," +
-        user.Height +
+        user.getHeight() +
         "," +
-        user.Weight
+        user.getWeight()
       );
     } catch (IOException e) {
       System.out.println(STORING_TO_FILE_ERROR + e.getMessage());
@@ -366,9 +366,9 @@ public class MathSoup {
   }
 
   public void welcomeBack(User user) {
-    System.out.println(WELCOME_BACK_MSG + user.Username);
-    System.out.println(WELCOME_BACK_MSG2 + user.Goal + WELCOME_BACK_MSG3);
-    System.out.println(WELCOME_BACK_MSG4 + user.Calories);
+    System.out.println(WELCOME_BACK_MSG + user.getUsername());
+    System.out.println(WELCOME_BACK_MSG2 + user.getGoal() + WELCOME_BACK_MSG3);
+    System.out.println(WELCOME_BACK_MSG4 + user.getCalories());
   }
 
   //TODO: Split up scenarios into different methods. Look up Maps and how to use them
@@ -377,9 +377,9 @@ public class MathSoup {
     long averageCalories = averageCalories(scanner);
     double weighChange = weightChange(scanner);
     long paceMultiplier;
-    if (user.Pace.equals(PACE_SLOWLY)) {
+    if (user.getPace().equals(PACE_SLOWLY)) {
       paceMultiplier = CALORIES_PER_QUARTER_KG;
-    } else if (user.Pace.equals(PACE_NORMAL)) {
+    } else if (user.getPace().equals(PACE_NORMAL)) {
       paceMultiplier = CALORIES_PER_HALF_KG;
     } else {
       paceMultiplier = CALORIES_PER_KG;
@@ -393,9 +393,9 @@ public class MathSoup {
 
   public void handleGoal(User user, double weighChange, long newGoal) {
     TreeMap<Double, String> messages = new TreeMap<>();
-    switch (user.Goal) {
+    switch (user.getGoal()) {
       case GOAL_LOSE:
-        switch (user.Pace) {
+        switch (user.getPace()) {
           case PACE_SLOWLY -> {
             messages.put(0.0, GOAL_FAILED_LOSE);
             messages.put(-0.05, GOAL_BARELY_LOST);
@@ -434,7 +434,7 @@ public class MathSoup {
         messages.put(Double.POSITIVE_INFINITY, GOAL_FAILED_LOSE);
         break;
       case GOAL_GAIN:
-        switch (user.Pace) {
+        switch (user.getPace()) {
           case PACE_SLOWLY:
             messages.put(0.1, GOAL_BARELY_GAIN);
             messages.put(0.5, GOAL_CONGRATS_QUARTER_GAIN);
@@ -467,7 +467,7 @@ public class MathSoup {
     if (entry != null) {
       System.out.println(entry.getValue());
       System.out.println(RECOMMEND_NEW_CALORIES + newGoal);
-      updateCalories(user.Username, newGoal, ACCOUNTS_FILE_PATH);
+      updateCalories(user.getUsername(), newGoal, ACCOUNTS_FILE_PATH);
     }
   }
 
@@ -535,7 +535,7 @@ public class MathSoup {
         while (true) {
           String password = scanner.nextLine();
           User user = getUser(username, ACCOUNTS_FILE_PATH);
-          if (user != null && password.equals(user.Password)) {
+          if (user != null && password.equals(user.getPassword())) {
             System.out.println(LOGIN_SUCCESSFULL);
             return user;
           } else {
