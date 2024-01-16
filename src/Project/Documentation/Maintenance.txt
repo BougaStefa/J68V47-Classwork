@@ -1,8 +1,23 @@
-Project has two main functionalities, create & initialize account is one and login & recalibrate is the other
-getValidX methods ensure that the program receives appropriate user input whenever the user is asked to provide some
-display methods show the menus that help the user navigate through the program
-calorie calculators use set formulae based on the parameters the user provided to come up with a recommendation
-createUser populates the user object on registration, getUser populates it from file upon login, storeUser saves it to the Accounts.txt file
-recalibrationSequence is the main method of the login part, it calls all the calculator functions and provides appropriate messages based on the user's previous and current inputs
-Tests folder contains unit tests for the majority of the methods 
-Constants file contains all messages, permanents mins & maxes etc (Do not alter it)
+HARDWARE SPECIFICATIONS:
+Processor: Intel Core i5 or equivalent
+RAM: 4GB or more
+Storage: 100GB or more
+Networking: Ethernet or WiFi capabilities
+
+SETUP & RUN :
+1-Open terminal
+2-run java -version , ensure you're on the latest one. run git --version as well
+3-navigate to desired destination(hint: cd filepath)
+4-run git clone https://github.com/BougaStefa/J68V47-Classwork.git
+5-for VS Code run cd J68V47-Classwork , run code . 
+5.5- for Intelij run cmd setx PATH=%PATH%;yourintelijdirectory and then run idea64.exe clonedrepodirectory
+6-Navigate to src/Project/MathSoup.java and run
+
+Backup procedures:
+Accounts are stored in src/project/Accounts.txt , back up regularly to safeguard against data loss
+
+Performing maintenance tasks:
+User details are not encrypted so if required they can be edited directly from the Accounts.txt file
+
+Managing user access:
+In order to delete a user, find the line with their username in the Accounts.txt file and delete the entire line

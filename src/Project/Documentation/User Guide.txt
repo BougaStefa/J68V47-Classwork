@@ -1,9 +1,3 @@
-Open terminal
-run java -version , ensure you're on the latest one
-navigate to desired destination(hint: cd filepath)
-run git clone https://github.com/BougaStefa/J68V47-Classwork.git
-run cd J68V47-Classwork , run code . (if on vscode, might be different on other IDEs)
-Navigate to src/Project/MathSoup.java and run
 Follow the menu prompts to create an account or login if you already have one
 For account creation : 
 1-Enter a username with no special charachters
